@@ -36,6 +36,80 @@
     "exportExcel": "Exporter tableau Excel",
     "filter": "Filtrer",
     "save": "Enregistrer",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "back": "Retour au tableau de bord"
+  },
+  "vet": {
+    "form": {
+      "title": "Fiche de Saisie Sanitaire Vétérinaire (Abattoir)",
+      "subtitle": "Enregistrement de l'inspection sanitaire et des motifs de saisie vétérinaire",
+      "slaughterhouse": "Abattoir Communal de Hussein Dey",
+      "wilaya": "Alger",
+      "commune": "Hussein Dey",
+      "facilityType": "Établissement Public d'Abattage",
+      "date": "Date d'inspection",
+      "doctorLabel": "Vétérinaire Inspecteur",
+      "doctor": "Dr. Mohamed Benali (Inspecteur Vétérinaire)",
+      "licenseNumber": "Agrément : DZ-16-042",
+      "urgentToggle": "Maladie à Déclaration Obligatoire (MDO - Alerte Épidémique)",
+      "urgentDescription": "Cocher en cas de suspicion d'une pathologie épizootique majeure ou zoonose nécessitant une notification immédiate",
+      "urgentBadge": "Alerte Épidémiologique Prioritaire",
+      "clinicalNotesLabel": "Signes cliniques suspects / Observations urgentes",
+      "clinicalNotesPlaceholder": "Détailler les lésions macroscopiques, organes suspects, provenance des animaux et mesures conservatoires prises...",
+      "findingsTitle": "Tableau des Saisies Sanitaires (Les Saisies)",
+      "findingsSubtitle": "Relevé détaillé des motifs pathologiques, organes affectés, décision de saisie et pesée",
+      "addFinding": "Ajouter une saisie",
+      "emptyTitle": "Aucune saisie sanitaire enregistrée pour ce lot",
+      "emptySubtitle": "Le lot a été inspecté sans saisie enregistrée. Cliquez sur 'Ajouter une saisie' pour consigner une lésion ou une anomalie constatée.",
+      "columns": {
+        "index": "#",
+        "species": "Espèce",
+        "disease": "Pathologie / Maladie",
+        "organ": "Organe",
+        "severity": "Décision de Saisie",
+        "quantity": "Nombre",
+        "weight": "Poids (kg)",
+        "actions": "Actions"
+      },
+      "selectSpecies": "Sélectionner espèce...",
+      "selectDisease": "Sélectionner maladie...",
+      "selectOrgan": "Sélectionner organe...",
+      "selectSeverity": "Sélectionner décision...",
+      "species": {
+        "BOVIN": "Bovin",
+        "OVIN": "Ovin",
+        "CAPRIN": "Caprin",
+        "EQUIN": "Équin",
+        "CAMELIN": "Camelin"
+      },
+      "diseases": {
+        "HYDAT": "Hydatidose (Kyste hydatique)",
+        "TUBER": "Tuberculose",
+        "FASCIOL": "Fasciolose (Grande Douve)",
+        "CYSTIC": "Cysticercose",
+        "AUTRES": "Autres affections"
+      },
+      "organs": {
+        "FOIE": "Foie",
+        "POUMON": "Poumon",
+        "COEUR": "Cœur"
+      },
+      "severities": {
+        "1C": "1C - Saisie Partielle",
+        "2C": "2C - Saisie Totale"
+      },
+      "removeFinding": "Supprimer cette saisie",
+      "summary": {
+        "totalFindings": "Total des saisies",
+        "totalWeight": "Poids total saisi",
+        "kg": "kg",
+        "items": "lignes"
+      },
+      "saveDraft": "Enregistrer brouillon",
+      "submitWilaya": "Transmettre à la Wilaya",
+      "draftSavedAlert": "Fiche de saisie enregistrée localement en brouillon avec succès.",
+      "submittedAlert": "Procès-verbal de saisie transmis avec succès à l'inspection vétérinaire de Wilaya.",
+      "validationError": "Veuillez renseigner tous les champs obligatoires (Espèce, Maladie, Organe, Décision, Poids) avant transmission."
+    }
   }
 }

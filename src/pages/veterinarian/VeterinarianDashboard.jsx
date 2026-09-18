@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { Stethoscope, PlusCircle, FileText, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 export default function VeterinarianDashboard() {
@@ -15,10 +16,13 @@ export default function VeterinarianDashboard() {
             واجهة التصريح بالأمراض الحيوانية ومتابعة البلاغات البيطرية الميدانية
           </p>
         </div>
-        <button className="btn-primary">
+        <Link
+          to="/veterinarian/new-declaration"
+          className="btn-primary"
+        >
           <PlusCircle className="w-4 h-4" />
           <span>{t('actions.newDeclaration')}</span>
-        </button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -51,11 +55,19 @@ export default function VeterinarianDashboard() {
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-soft">
-        <h3 className="text-base font-semibold text-slate-800 mb-2">
-          مخطط سريان البيانات البيطرية (Veterinarian Spec Foundation)
-        </h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-base font-semibold text-slate-800">
+            مخطط سريان البيانات البيطرية (Veterinarian Spec Foundation)
+          </h3>
+          <Link
+            to="/veterinarian/new-declaration"
+            className="text-xs font-bold text-emerald-600 hover:text-emerald-700 underline"
+          >
+            فتح استمارة الحجز الصحي / Ouvrir la fiche
+          </Link>
+        </div>
         <p className="text-sm text-slate-600 leading-relaxed">
-          هذا المسار مخصص لاستقبال مواصفات واجهات الطبيب البيطري (إدخال البلاغات، رفع الصور والأعراض، تصدير الشهادات، والمزامنة في وضع عدم الاتصال).
+          تم تفعيل استمارة الفحص الصحي وحجوزات المذابح (CaseEntryForm) مع التبديل الديناميكي للفصائل، الأعضاء، والقرارات الصحية وفق معايير SDD-Pro وUI/UX Pro Max.
         </p>
       </div>
     </div>

@@ -4,6 +4,7 @@ import Navbar from './components/layout/Navbar';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
 import VeterinarianDashboard from './pages/veterinarian/VeterinarianDashboard';
+import CaseEntryForm from './pages/veterinarian/CaseEntryForm';
 import WilayaDashboard from './pages/wilaya/WilayaDashboard';
 import MinistryDashboard from './pages/ministry/MinistryDashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -17,7 +18,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/veterinarian/*" element={<VeterinarianDashboard />} />
+            <Route path="/veterinarian" element={<VeterinarianDashboard />} />
+            <Route path="/veterinarian/new-declaration" element={<CaseEntryForm />} />
             <Route path="/wilaya/*" element={<WilayaDashboard />} />
             <Route path="/ministry/*" element={<MinistryDashboard />} />
             <Route path="/admin/*" element={<AdminDashboard />} />

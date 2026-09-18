@@ -12,12 +12,12 @@
 ---
 
 ## 2. Current Status & Phase
-- **Current Phase:** Phase 1 — Architecture Initialization & Workspace Rules Injected (Completed).
-- **Next Phase:** Phase 2 — Veterinarian Dashboard Specifications & Data Contracts (SDD-Pro).
+- **Current Phase:** Phase 2 — Veterinarian Data Entry Component Implemented (`CaseEntryForm`).
+- **Next Phase:** Phase 3 — Supabase Data Layer & Wilaya Validation Workflow (SDD-Pro).
 
 ---
 
-## 3. Completed Tasks (Initialization Steps)
+## 3. Completed Tasks
 - [x] **Project Initialization:**
   - Scaffolding Vite React application in `scratch/animal-disease-platform`.
   - Initialized Git tracking (`git init`).
@@ -25,51 +25,42 @@
   - Tailwind CSS, PostCSS, Autoprefixer configured.
   - Production libraries installed: `react-router-dom`, `zustand`, `lucide-react`, `clsx`, `tailwind-merge`, `@supabase/supabase-js`, `@mui/x-data-grid`, `@mui/material`, `@emotion/react`, `@emotion/styled`, `xlsx`, `jspdf`, `jspdf-autotable`, `i18next`, `react-i18next`.
 - [x] **SDD & UI/UX Rules Injected:**
-  - Created `.ai/` directory.
-  - Injected `ui-ux-pro-max.md` (UI/UX design intelligence, color harmony, typography pairing, anti-pattern rules).
-  - Injected `sdd-pro.md` (Spec-Driven Development, deterministic gates, traceability FEAT -> US -> Plan -> Code).
+  - Created `.ai/` directory with `ui-ux-pro-max.md` and `sdd-pro.md`.
   - Contextualized rules into agent reasoning context.
 - [x] **Folder Structure:**
-  - Created standard layered directories:
-    - `src/assets`
-    - `src/components/layout`
-    - `src/components/ui`
-    - `src/contexts`
-    - `src/hooks`
-    - `src/i18n/locales`
-    - `src/lib`
-    - `src/pages/auth`
-    - `src/pages/veterinarian`
-    - `src/pages/wilaya`
-    - `src/pages/ministry`
-    - `src/pages/admin`
+  - Standard layered directories created (`assets`, `components`, `contexts`, `hooks`, `i18n`, `lib`, `pages`).
 - [x] **Initial Configuration:**
-  - Created `.env.example` and `.env` with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
-  - Configured Supabase client in `src/lib/supabase.js`.
-  - Configured bilingual i18n engine in `src/i18n/config.js` with dynamic HTML `dir="rtl"` / `dir="ltr"` attribute and locale files (`ar.json`, `fr.json`).
-  - Configured `tailwind.config.js` with veterinary/medical color palettes, typography tokens (`Cairo`, `Noto Sans Arabic`, `Inter`), soft shadows, and glassmorphism.
-  - Updated `src/index.css` applying UI/UX Pro Max tokens and accessibility guidelines.
-  - Created `src/App.jsx` with `react-router-dom` routes and placeholder dashboards for all four roles (`veterinarian`, `wilaya`, `ministry`, `admin`) plus authentication.
+  - Environment variables template (`.env.example`) and Supabase client (`src/lib/supabase.js`).
+  - Bilingual i18n engine (`src/i18n/config.js`) with dynamic RTL/LTR direction switching.
+  - Tailwind CSS configured with medical palettes and Arabic/Latin typography.
+- [x] **Veterinarian CaseEntryForm (`FEAT-01`):**
+  - Created `src/pages/veterinarian/CaseEntryForm.jsx`.
+  - Replaced legacy spreadsheet with dynamic row-based entry form.
+  - Implemented Data Dictionary:
+    - **Species:** BOVIN, OVIN, CAPRIN, EQUIN, CAMELIN.
+    - **Diseases:** HYDAT, TUBER, FASCIOL, CYSTIC, AUTRES.
+    - **Organs:** FOIE, POUMON, COEUR.
+    - **Severities:** 1C (Partial Seizure), 2C (Total Seizure).
+  - Mocked slaughterhouse header ("Abattoir Communal de Hussein Dey", "Alger", Inspector & Date).
+  - Urgent MDO block with visual warning state and expandable clinical notes textarea.
+  - Dynamic findings list with add/remove rows, empty state, and desktop/mobile responsiveness.
+  - Sticky bottom action bar with real-time metrics (total weight in kg, total cases) and action buttons (Save Draft, Submit to Wilaya).
+  - Zero hardcoded strings: 100% translated in `src/i18n/locales/ar.json` and `src/i18n/locales/fr.json`.
+  - Wired into `src/App.jsx` and `src/pages/veterinarian/VeterinarianDashboard.jsx`.
 
 ---
 
-## 4. Next Steps (Focus: Veterinarian Dashboard Specs)
-- [ ] **FEAT-01: Veterinarian Module Specification (SDD-Pro Phase):**
-  - Define User Stories for field veterinarian declarations:
-    - US-01: Outbreak reporting form (suspected disease, species, affected heads, mortalities, GPS/Wilaya/Commune).
-    - US-02: Laboratory sampling attachment & symptom checklists.
-    - US-03: Real-time status tracker (Pending Wilaya Review, Validated, Quarantine Ordered).
-    - US-04: Offline-ready caching mechanism for remote rural zones.
-- [ ] **Data Contract & Supabase Schema Draft:**
-  - Tables: `declarations`, `diseases`, `species`, `wilayas`, `communes`, `veterinarians`, `audit_logs`.
-  - Define RLS (Row Level Security) policies for private vs inspection access.
-- [ ] **UI Component Plan (UI/UX Pro Max):**
-  - High-efficiency data input forms with keyboard accessibility.
-  - Fast status badges, interactive data grids with Excel/PDF exports.
+## 4. Next Steps
+- [ ] **Data Persistence & Supabase Integration:**
+  - Create Supabase database tables (`slaughterhouse_cases`, `case_findings`, `mdo_alerts`).
+  - Connect `handleSaveDraft` and `handleSubmit` to Supabase Postgres API and local offline storage (`indexedDB` / `localStorage`).
+- [ ] **Wilaya Inspection Dashboard:**
+  - Implement real-time inspection view for transmitted slaughterhouse seizure records.
+  - Validation / Rejection workflow with inspection certificate generation (PDF export).
 
 ---
 
 ## 5. Active Context & Technical Constraints
 - **Direction Handling:** Dynamic RTL (Arabic) and LTR (French) controlled via `i18n.language` and `document.documentElement.dir`.
-- **Accessibility & Contrast:** 4.5:1 minimum contrast ratio maintained across all alert statuses (Amber alert, Red danger, Emerald success).
+- **Form Path:** `/veterinarian/new-declaration`.
 - **Working Directory:** `C:\Users\moham\.gemini\antigravity-ide\scratch\animal-disease-platform`.
