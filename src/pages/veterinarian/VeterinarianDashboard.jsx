@@ -18,7 +18,6 @@ import {
   Lock,
   ShieldCheck,
 } from 'lucide-react';
-import PageHeader from '../../components/ui/PageHeader';
 import {
   getCurrentUser,
   fetchReports,
@@ -526,18 +525,7 @@ export default function VeterinarianDashboard() {
         </div>
       )}
 
-      {/* Top Page Header */}
-      <PageHeader
-        category={t('roles.veterinarian')}
-        badge="Poste Sanitaire d'Abattoir"
-        badgeVariant="dhis"
-        title={t('nav.veterinarian')}
-        subtitle={
-          isRtl
-            ? 'بوابة الطبيب البيطري لتسجيل الفحص الصحي، محاضر الحجز اليومية والتصريح بالأمراض الخاضعة للإبلاغ الإجباري.'
-            : 'Portail opérationnel du praticien pour la saisie journalière des saisies et des alertes sanitaires.'
-        }
-      />
+      
 
       {/* =========================================================================
           CLINICAL INSPECTION SESSION HEADER (Strict PV Administrative Metadata)
@@ -852,7 +840,7 @@ export default function VeterinarianDashboard() {
 
                       {/* Saisies & Poids */}
                       <td className="py-2.5 px-3 whitespace-nowrap font-mono text-slate-700">
-                        <span className="font-bold text-slate-900">{weightTotal} kg</span>
+                        <span dir="ltr" className="font-bold text-slate-900 font-mono inline-block">{weightTotal} kg</span>
                         <span className="text-slate-400 text-[10px] ms-1.5">
                           ({countFindings} {isRtl ? 'آفة' : 'lésion(s)'})
                         </span>
