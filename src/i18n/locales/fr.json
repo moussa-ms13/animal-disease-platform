@@ -1,0 +1,41 @@
+{
+  "app": {
+    "title": "Plateforme Nationale de Surveillance des Maladies Animales",
+    "subtitle": "Système numérique intégré d'alerte précoce et de veille épidémiologique vétérinaire",
+    "language": "Langue",
+    "ar": "Arabe",
+    "fr": "Français"
+  },
+  "nav": {
+    "home": "Accueil",
+    "veterinarian": "Portail Vétérinaire",
+    "wilaya": "Inspection de Wilaya",
+    "ministry": "Ministère Central",
+    "admin": "Administration",
+    "login": "Connexion",
+    "logout": "Déconnexion"
+  },
+  "roles": {
+    "veterinarian": "Vétérinaire Praticien",
+    "wilaya": "Inspecteur Vétérinaire de Wilaya",
+    "ministry": "Direction des Services Vétérinaires (Centrale)",
+    "admin": "Administrateur Système"
+  },
+  "status": {
+    "normal": "Normal",
+    "alert": "Alerte Épidémique",
+    "epidemic": "Foyer Confirmé",
+    "pending": "En cours d'examen",
+    "validated": "Validé",
+    "rejected": "Rejeté"
+  },
+  "actions": {
+    "newDeclaration": "Nouvelle déclaration de maladie",
+    "viewDetails": "Voir détails",
+    "exportPDF": "Exporter rapport PDF",
+    "exportExcel": "Exporter tableau Excel",
+    "filter": "Filtrer",
+    "save": "Enregistrer",
+    "cancel": "Annuler"
+  }
+}
