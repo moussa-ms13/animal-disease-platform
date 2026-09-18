@@ -341,11 +341,40 @@ export async function fetchReports(filters = {}) {
           inspection_date: '2026-09-18',
           status: 'DRAFT',
           is_urgent_mdo: false,
+          slaughterhouse_id: 'ab-1',
           slaughterhouse_name: 'Abattoir Communal Hussein Dey',
           commune_name: 'Hussein Dey',
-          inspector_name: 'Dr. Benali M.',
+          inspector_name: 'Dr. Mohamed Benali',
+          clinical_notes: 'Constat de kystes hydatiques hépatiques et pulmonaires sur bovins adultes. Température normale à l\'inspection ante-mortem.',
+          validation_remarks: '',
           findings_count: 2,
           total_weight: '4.5',
+          seizure_items: [
+            {
+              id: 'sz-001-1',
+              species_id: 'sp-1',
+              disease_id: 'ds-1',
+              organ_id: 'og-1',
+              severity: '1C',
+              total_quantity: 2,
+              total_weight: 3.0,
+              species: { code: 'BOVIN', name_fr: 'Bovin', name_ar: 'أبقار' },
+              diseases: { code: 'HYDAT', name_fr: 'Hydatidose (Kyste hydatique)', name_ar: 'داء المشوكات', is_mdo: false },
+              organs: { code: 'FOIE', name_fr: 'Foie', name_ar: 'الكبد' },
+            },
+            {
+              id: 'sz-001-2',
+              species_id: 'sp-1',
+              disease_id: 'ds-1',
+              organ_id: 'og-2',
+              severity: '1C',
+              total_quantity: 1,
+              total_weight: 1.5,
+              species: { code: 'BOVIN', name_fr: 'Bovin', name_ar: 'أبقار' },
+              diseases: { code: 'HYDAT', name_fr: 'Hydatidose (Kyste hydatique)', name_ar: 'داء المشوكات', is_mdo: false },
+              organs: { code: 'POUMON', name_fr: 'Poumon', name_ar: 'الرئة' },
+            },
+          ],
         },
         {
           id: 'rep-002',
@@ -353,11 +382,28 @@ export async function fetchReports(filters = {}) {
           inspection_date: '2026-09-18',
           status: 'SUBMITTED_TO_WILAYA',
           is_urgent_mdo: true,
+          slaughterhouse_id: 'ab-2',
           slaughterhouse_name: "Abattoir d'El Harrach",
           commune_name: 'El Harrach',
-          inspector_name: 'Dr. Khelifi S.',
+          inspector_name: 'Dr. Samia Khelifi',
+          clinical_notes: 'Suspicion majeure de tuberculose bovine miliaire généralisée. Adénites caséeuses médiastinales et rétropharyngiennes. Mesures d\'isolement et consignation de carcasse appliquées.',
+          validation_remarks: 'En cours d\'instruction urgente par l\'inspection de la Wilaya d\'Alger (DSV).',
           findings_count: 1,
           total_weight: '180.0',
+          seizure_items: [
+            {
+              id: 'sz-002-1',
+              species_id: 'sp-1',
+              disease_id: 'ds-2',
+              organ_id: 'og-2',
+              severity: '2C',
+              total_quantity: 1,
+              total_weight: 180.0,
+              species: { code: 'BOVIN', name_fr: 'Bovin', name_ar: 'أبقار' },
+              diseases: { code: 'TUBER', name_fr: 'Tuberculose bovine', name_ar: 'السل البقري', is_mdo: true },
+              organs: { code: 'POUMON', name_fr: 'Carcasse entière & Poumon', name_ar: 'الذبيحة والرئة' },
+            },
+          ],
         },
         {
           id: 'rep-003',
@@ -365,11 +411,40 @@ export async function fetchReports(filters = {}) {
           inspection_date: '2026-09-17',
           status: 'VALIDATED',
           is_urgent_mdo: false,
+          slaughterhouse_id: 'ab-3',
           slaughterhouse_name: 'Tuerie Municipale Rouiba',
           commune_name: 'Rouiba',
           inspector_name: 'Dr. Mansouri F.',
-          findings_count: 3,
+          clinical_notes: 'Parasitisme hépatique à Fasciola hepatica sur le lot ovin matinal. Examen de carcasse sans altération systémique.',
+          validation_remarks: 'PV validé et visé par le Dr. Khelifi (Inspecteur de Wilaya) le 17/09/2026 avec certification de destruction des viscères.',
+          findings_count: 2,
           total_weight: '8.2',
+          seizure_items: [
+            {
+              id: 'sz-003-1',
+              species_id: 'sp-2',
+              disease_id: 'ds-3',
+              organ_id: 'og-1',
+              severity: '1C',
+              total_quantity: 4,
+              total_weight: 5.2,
+              species: { code: 'OVIN', name_fr: 'Ovin', name_ar: 'أغنام' },
+              diseases: { code: 'FASCIOL', name_fr: 'Fasciolose (Grande Douve)', name_ar: 'داء المتورقات', is_mdo: false },
+              organs: { code: 'FOIE', name_fr: 'Foie', name_ar: 'الكبد' },
+            },
+            {
+              id: 'sz-003-2',
+              species_id: 'sp-2',
+              disease_id: 'ds-1',
+              organ_id: 'og-2',
+              severity: '1C',
+              total_quantity: 2,
+              total_weight: 3.0,
+              species: { code: 'OVIN', name_fr: 'Ovin', name_ar: 'أغنام' },
+              diseases: { code: 'HYDAT', name_fr: 'Hydatidose (Kyste hydatique)', name_ar: 'داء المشوكات', is_mdo: false },
+              organs: { code: 'POUMON', name_fr: 'Poumon', name_ar: 'الرئة' },
+            },
+          ],
         },
       ],
       error: null,
@@ -532,5 +607,84 @@ export async function deleteReport(reportId) {
   } catch (err) {
     console.warn('[dbService.deleteReport] Deletion fallback:', err.message);
     return { success: true, error: null };
+  }
+}
+
+
+/**
+ * Updates an existing inspection report (PV) and replaces its seizure items.
+ * @param {string} reportId
+ * @param {object} reportData
+ * @param {Array} seizureItems
+ * @returns {Promise<{ report: object | null, error: string | null }>}
+ */
+export async function updateInspectionReport(reportId, reportData, seizureItems = []) {
+  try {
+    const updatePayload = {
+      slaughterhouse_id: reportData.slaughterhouseId,
+      inspection_date: reportData.inspectionDate,
+      status: reportData.status || 'DRAFT',
+      is_urgent_mdo: Boolean(reportData.isUrgentMdo),
+      clinical_notes: reportData.clinicalNotes || '',
+      updated_at: new Date().toISOString(),
+    };
+
+    if (reportData.status === 'SUBMITTED_TO_WILAYA') {
+      updatePayload.submitted_at = new Date().toISOString();
+    }
+
+    const { data: updated, error: repError } = await supabase
+      .from('inspection_reports')
+      .update(updatePayload)
+      .eq('id', reportId)
+      .select()
+      .single();
+
+    if (repError) throw repError;
+
+    // Replace child seizure items
+    await supabase.from('seizure_items').delete().eq('report_id', reportId);
+
+    if (seizureItems.length > 0) {
+      const itemsToInsert = seizureItems.map((item) => ({
+        report_id: reportId,
+        species_id: item.speciesId,
+        disease_id: item.diseaseId,
+        organ_id: item.organId,
+        severity: item.severity || '1C',
+        total_quantity: Number(item.quantity) || 1,
+        total_weight: Number(item.weight) || 0.0,
+      }));
+      await supabase.from('seizure_items').insert(itemsToInsert);
+    }
+
+    return { report: updated, error: null };
+  } catch (err) {
+    console.warn('[dbService.updateInspectionReport] Offline/mock fallback:', err.message);
+    const updatedMock = {
+      id: reportId,
+      reference_no: reportData.referenceNo || ('PV-16-' + new Date().getFullYear() + '-089'),
+      inspection_date: reportData.inspectionDate,
+      status: reportData.status || 'DRAFT',
+      is_urgent_mdo: Boolean(reportData.isUrgentMdo),
+      clinical_notes: reportData.clinicalNotes || '',
+      slaughterhouse_id: reportData.slaughterhouseId,
+      slaughterhouse_name: reportData.slaughterhouseName || 'Abattoir Communal Hussein Dey',
+      commune_name: 'Hussein Dey',
+      inspector_name: reportData.inspectorName || 'Dr. Mohamed Benali',
+      validation_remarks: reportData.validationRemarks || '',
+      findings_count: seizureItems.length,
+      total_weight: seizureItems.reduce((acc, it) => acc + (Number(it.weight || it.total_weight) || 0), 0).toFixed(1),
+      seizure_items: seizureItems.map((item, idx) => ({
+        id: item.id || ('sz-' + idx + '-' + Date.now()),
+        total_quantity: Number(item.quantity || item.total_quantity) || 1,
+        total_weight: Number(item.weight || item.total_weight) || 0,
+        severity: item.severity || '1C',
+        species: { name_fr: item.speciesName || item.species?.name_fr || 'Bovin' },
+        diseases: { name_fr: item.diseaseName || item.diseases?.name_fr || 'Hydatidose', is_mdo: Boolean(item.isMdo || item.diseases?.is_mdo) },
+        organs: { name_fr: item.organName || item.organs?.name_fr || 'Foie' }
+      }))
+    };
+    return { report: updatedMock, error: null };
   }
 }

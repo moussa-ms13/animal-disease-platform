@@ -9,22 +9,21 @@ import {
   Eye,
   AlertTriangle,
   Search,
-  Filter,
   X,
   CheckCircle2,
-  Calendar,
-  Building2,
-  Layers,
-  ArrowUpDown,
   RefreshCw,
   FileText,
   ShieldAlert,
+  Pencil,
+  Lock,
+  ShieldCheck,
 } from 'lucide-react';
 import PageHeader from '../../components/ui/PageHeader';
 import {
   getCurrentUser,
   fetchReports,
   createInspectionReport,
+  updateInspectionReport,
   deleteReport,
   fetchDictionaries,
   fetchSlaughterhouses,
@@ -57,9 +56,10 @@ export default function VeterinarianDashboard() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
+  const [editingReportId, setEditingReportId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // New Report Form State
+  // Report Form State
   const initialFormState = {
     inspectionDate: new Date().toISOString().split('T')[0],
     slaughterhouseId: user?.slaughterhouseId || 'ab-1',
@@ -67,6 +67,7 @@ export default function VeterinarianDashboard() {
     status: 'DRAFT',
     isUrgentMdo: false,
     clinicalNotes: '',
+    validationRemarks: '',
   };
   const [formData, setFormData] = useState(initialFormState);
 
@@ -83,7 +84,7 @@ export default function VeterinarianDashboard() {
     },
   ]);
 
-  // Session metadata for the official PV ribbon
+  // Session metadata for official PV ribbon
   const { sessionDate, sessionRef } = useMemo(() => {
     const now = new Date();
     const pad = (n) => String(n).padStart(2, '0');
@@ -104,11 +105,9 @@ export default function VeterinarianDashboard() {
     else setLoading(true);
 
     try {
-      // 1. Fetch reports
       const { reports: data } = await fetchReports();
       setReports(data || []);
 
-      // 2. Fetch dictionary lists
       const [dictData, abattoirs] = await Promise.all([
         fetchDictionaries(),
         fetchSlaughterhouses(),
@@ -142,14 +141,12 @@ export default function VeterinarianDashboard() {
   // --------------------------------------------------------------------------
   const filteredReports = useMemo(() => {
     return reports.filter((rep) => {
-      // Status filter
       if (statusFilter === 'MDO') {
         if (!rep.is_urgent_mdo) return false;
       } else if (statusFilter !== 'ALL' && rep.status !== statusFilter) {
         return false;
       }
 
-      // Search query filter
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
         const refNo = (rep.reference_no || rep.id || '').toLowerCase();
@@ -192,6 +189,7 @@ export default function VeterinarianDashboard() {
       'Nombre de lésions',
       'Poids total saisi (kg)',
       'Observations / Notes cliniques',
+      'Avis de validation (Wilaya)',
     ];
 
     const rows = filteredReports.map((r) => {
@@ -210,13 +208,14 @@ export default function VeterinarianDashboard() {
         r.total_weight ||
         (r.seizure_items
           ? r.seizure_items.reduce(
-              (acc, it) => acc + (Number(it.total_weight) || 0),
+              (acc, it) => acc + (Number(it.total_weight || it.weight) || 0),
               0
             )
           : '0.0');
       const notes = `"${(r.clinical_notes || '').replace(/"/g, '""')}"`;
+      const validation = `"${(r.validation_remarks || '').replace(/"/g, '""')}"`;
 
-      return [refNo, date, abattoir, status, mdo, count, weight, notes].join(';');
+      return [refNo, date, abattoir, status, mdo, count, weight, notes, validation].join(';');
     });
 
     const csvContent =
@@ -277,14 +276,109 @@ export default function VeterinarianDashboard() {
   };
 
   // --------------------------------------------------------------------------
-  // 6. FORM SUBMISSION
+  // 6. EDITING REPORT MODAL TRIGGER
+  // --------------------------------------------------------------------------
+  const handleOpenEditModal = (repToEdit) => {
+    const report = repToEdit || selectedReport;
+    if (!report) return;
+
+    if (report.status !== 'DRAFT') {
+      triggerToast(
+        isRtl
+          ? 'لا يمكن تعديل المحضر إلا إذا كان في حالة مسودة (DRAFT)'
+          : 'Seuls les procès-verbaux en état BROUILLON (DRAFT) peuvent être modifiés.'
+      );
+      return;
+    }
+
+    setEditingReportId(report.id);
+    setFormData({
+      inspectionDate: report.inspection_date || new Date().toISOString().split('T')[0],
+      slaughterhouseId: report.slaughterhouse_id || 'ab-1',
+      slaughterhouseName:
+        report.slaughterhouse_name ||
+        report.slaughterhouses?.name_fr ||
+        'Abattoir Communal Hussein Dey',
+      status: report.status || 'DRAFT',
+      isUrgentMdo: Boolean(report.is_urgent_mdo),
+      clinicalNotes: report.clinical_notes || '',
+      validationRemarks: report.validation_remarks || '',
+    });
+
+    // Populate seizure rows from report's seizure_items
+    if (report.seizure_items && report.seizure_items.length > 0) {
+      const rows = report.seizure_items.map((it, idx) => {
+        // Resolve species ID
+        let spId = it.species_id;
+        if (!spId && it.species) {
+          const matchedSp = dictionaries.species.find(
+            (s) =>
+              s.code === it.species.code ||
+              s.name_fr?.toLowerCase() === it.species.name_fr?.toLowerCase()
+          );
+          spId = matchedSp?.id;
+        }
+
+        // Resolve disease ID
+        let dsId = it.disease_id;
+        if (!dsId && it.diseases) {
+          const matchedDs = dictionaries.diseases.find(
+            (d) =>
+              d.code === it.diseases.code ||
+              d.name_fr?.toLowerCase() === it.diseases.name_fr?.toLowerCase()
+          );
+          dsId = matchedDs?.id;
+        }
+
+        // Resolve organ ID
+        let ogId = it.organ_id;
+        if (!ogId && it.organs) {
+          const matchedOg = dictionaries.organs.find(
+            (o) =>
+              o.code === it.organs.code ||
+              o.name_fr?.toLowerCase() === it.organs.name_fr?.toLowerCase()
+          );
+          ogId = matchedOg?.id;
+        }
+
+        return {
+          id: 'row-edit-' + idx + '-' + Date.now(),
+          speciesId: spId || dictionaries.species[0]?.id || 'sp-1',
+          diseaseId: dsId || dictionaries.diseases[0]?.id || 'ds-1',
+          organId: ogId || dictionaries.organs[0]?.id || 'og-1',
+          severity: it.severity || '1C',
+          quantity: Number(it.total_quantity || it.quantity) || 1,
+          weight: Number(it.total_weight || it.weight) || 1.0,
+        };
+      });
+      setSeizureRows(rows);
+    } else {
+      setSeizureRows([
+        {
+          id: 'row-1',
+          speciesId: dictionaries.species[0]?.id || 'sp-1',
+          diseaseId: dictionaries.diseases[0]?.id || 'ds-1',
+          organId: dictionaries.organs[0]?.id || 'og-1',
+          severity: '1C',
+          quantity: 1,
+          weight: 4.5,
+        },
+      ]);
+    }
+
+    // Close view modal and open edit form
+    setIsViewModalOpen(false);
+    setIsCreateModalOpen(true);
+  };
+
+  // --------------------------------------------------------------------------
+  // 7. FORM SUBMISSION (CREATE OR UPDATE)
   // --------------------------------------------------------------------------
   const handleSubmitReport = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
     try {
-      // Find slaughterhouse name from dictionaries
       const abattoirObj = dictionaries.slaughterhouses.find(
         (a) => a.id === formData.slaughterhouseId
       );
@@ -299,9 +393,9 @@ export default function VeterinarianDashboard() {
         status: formData.status,
         isUrgentMdo: formData.isUrgentMdo,
         clinicalNotes: formData.clinicalNotes,
+        validationRemarks: formData.validationRemarks,
       };
 
-      // Map rows with friendly labels for offline mock resilience
       const preparedSeizureItems = seizureRows.map((row) => {
         const spec = dictionaries.species.find((s) => s.id === row.speciesId);
         const dis = dictionaries.diseases.find((d) => d.id === row.diseaseId);
@@ -323,19 +417,45 @@ export default function VeterinarianDashboard() {
         };
       });
 
-      const { report, error } = await createInspectionReport(
-        reportPayload,
-        preparedSeizureItems
-      );
+      if (editingReportId) {
+        // UPDATE EXISTING REPORT
+        const { report: updated, error } = await updateInspectionReport(
+          editingReportId,
+          reportPayload,
+          preparedSeizureItems
+        );
 
-      if (error) {
-        throw new Error(error);
+        if (error) throw new Error(error);
+
+        setReports((prev) =>
+          prev.map((r) => (r.id === editingReportId ? { ...r, ...updated } : r))
+        );
+
+        triggerToast(
+          isRtl
+            ? 'تم تعديل محضر التفتيش الصحي بنجاح'
+            : 'Procès-verbal mis à jour avec succès.'
+        );
+      } else {
+        // CREATE NEW REPORT
+        const { report: created, error } = await createInspectionReport(
+          reportPayload,
+          preparedSeizureItems
+        );
+
+        if (error) throw new Error(error);
+
+        setReports((prev) => [created, ...prev]);
+
+        triggerToast(
+          isRtl
+            ? 'تم تسجيل محضر التفتيش الصحي بنجاح'
+            : 'Procès-verbal d\'inspection enregistré avec succès.'
+        );
       }
 
-      // Prepend newly created report to list
-      setReports((prev) => [report, ...prev]);
-
       setIsCreateModalOpen(false);
+      setEditingReportId(null);
       setFormData(initialFormState);
       setSeizureRows([
         {
@@ -348,18 +468,12 @@ export default function VeterinarianDashboard() {
           weight: 4.5,
         },
       ]);
-
-      triggerToast(
-        isRtl
-          ? 'تم تسجيل محضر التفتيش الصحي بنجاح'
-          : 'Procès-verbal d\'inspection enregistré avec succès.'
-      );
     } catch (err) {
       console.error('[VeterinarianDashboard] Submit error:', err);
       triggerToast(
         isRtl
           ? 'حدث خطأ أثناء حفظ المحضر'
-          : `Erreur d'enregistrement: ${err.message}`
+          : `Erreur: ${err.message}`
       );
     } finally {
       setSubmitting(false);
@@ -367,7 +481,7 @@ export default function VeterinarianDashboard() {
   };
 
   // --------------------------------------------------------------------------
-  // 7. DELETE REPORT
+  // 8. DELETE REPORT
   // --------------------------------------------------------------------------
   const handleDeleteReport = async (reportId) => {
     const confirmMsg = isRtl
@@ -593,7 +707,22 @@ export default function VeterinarianDashboard() {
 
             {/* Add Report Button */}
             <button
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={() => {
+                setEditingReportId(null);
+                setFormData(initialFormState);
+                setSeizureRows([
+                  {
+                    id: 'row-1',
+                    speciesId: dictionaries.species[0]?.id || 'sp-1',
+                    diseaseId: dictionaries.diseases[0]?.id || 'ds-1',
+                    organId: dictionaries.organs[0]?.id || 'og-1',
+                    severity: '1C',
+                    quantity: 1,
+                    weight: 4.5,
+                  },
+                ]);
+                setIsCreateModalOpen(true);
+              }}
               className="inline-flex items-center gap-1 px-3 py-1 rounded-sm bg-[#0c4a6e] hover:bg-[#072c41] text-white text-xs font-semibold tracking-wide cursor-pointer border border-[#09354f] transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -651,7 +780,7 @@ export default function VeterinarianDashboard() {
                     rep.total_weight ||
                     (rep.seizure_items
                       ? rep.seizure_items
-                          .reduce((s, it) => s + (Number(it.total_weight) || 0), 0)
+                          .reduce((s, it) => s + (Number(it.total_weight || it.weight) || 0), 0)
                           .toFixed(1)
                       : '0.0');
                   const countFindings =
@@ -732,6 +861,17 @@ export default function VeterinarianDashboard() {
                       {/* Actions */}
                       <td className="py-2.5 px-3 text-end whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1.5">
+                          {/* Edit Direct Button (if DRAFT) */}
+                          {rep.status === 'DRAFT' && (
+                            <button
+                              onClick={() => handleOpenEditModal(rep)}
+                              title={isRtl ? 'تعديل المحضر' : 'Modifier le PV'}
+                              className="p-1 rounded-sm border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer transition-colors"
+                            >
+                              <Pencil className="w-3.5 h-3.5 text-blue-700" />
+                            </button>
+                          )}
+
                           {/* View PV Details Button */}
                           <button
                             onClick={() => {
@@ -781,7 +921,7 @@ export default function VeterinarianDashboard() {
                         r.total_weight ||
                           (r.seizure_items
                             ? r.seizure_items.reduce(
-                                (s, it) => s + (Number(it.total_weight) || 0),
+                                (s, it) => s + (Number(it.total_weight || it.weight) || 0),
                                 0
                               )
                             : 0)
@@ -797,7 +937,330 @@ export default function VeterinarianDashboard() {
       </div>
 
       {/* =========================================================================
-          MODAL: NOUVELLE DÉCLARATION / SAISIE PV (AGGREGATED FORM)
+          MODAL: VIEW / CONSULTER DÉTAILS DU PV (WITH SEIZURE ITEMS & EDIT ACTION)
+         ========================================================================= */}
+      {isViewModalOpen && selectedReport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-none">
+          <div className="bg-white border border-slate-300 rounded-sm shadow-xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in">
+            {/* Modal Header */}
+            <div className="bg-slate-100 px-4 py-3 border-b border-slate-300 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-[#0c4a6e]" />
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono">
+                    {selectedReport.reference_no || `PV-${selectedReport.id?.slice(0, 8)}`}
+                  </h3>
+                  <span className="text-[10px] text-slate-500 font-mono block">
+                    {isRtl
+                      ? 'محضر الفحص والتفتيش الصحي البيطري — النسخة الرقمية'
+                      : 'Procès-Verbal d\'Inspection Sanitaire et Vétérinaire'}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsViewModalOpen(false)}
+                className="p-1 rounded-sm text-slate-400 hover:text-slate-700 hover:bg-slate-200 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Document Body */}
+            <div className="p-4 overflow-y-auto space-y-4 text-xs">
+              {/* Top Key-Value Strip */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 bg-slate-50 border border-slate-200 rounded-sm font-mono text-[11px]">
+                <div>
+                  <span className="text-slate-400 block text-[9px] uppercase font-bold">
+                    {isRtl ? 'التاريخ' : 'Date Inspection'}
+                  </span>
+                  <span className="font-semibold text-slate-900">
+                    {selectedReport.inspection_date || '—'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[9px] uppercase font-bold">
+                    {isRtl ? 'الحالة' : 'Statut'}
+                  </span>
+                  <span className="font-semibold text-slate-900">
+                    {selectedReport.status === 'VALIDATED' && (
+                      <span className="text-emerald-700 font-bold">VALIDÉ</span>
+                    )}
+                    {selectedReport.status === 'SUBMITTED_TO_WILAYA' && (
+                      <span className="text-blue-700 font-bold">TRANSMIS WILAYA</span>
+                    )}
+                    {selectedReport.status === 'DRAFT' && (
+                      <span className="text-slate-700 font-bold">BROUILLON</span>
+                    )}
+                    {selectedReport.status === 'RETURNED_FOR_CORRECTION' && (
+                      <span className="text-amber-700 font-bold">À CORRIGER</span>
+                    )}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[9px] uppercase font-bold">
+                    {isRtl ? 'إنذار MDO' : 'Alerte MDO'}
+                  </span>
+                  <span className="font-semibold">
+                    {selectedReport.is_urgent_mdo ? (
+                      <span className="text-red-700 font-bold flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3" />
+                        OUI (Urgence DSV)
+                      </span>
+                    ) : (
+                      <span className="text-slate-500">Non</span>
+                    )}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[9px] uppercase font-bold">
+                    {isRtl ? 'الوزن الإجمالي' : 'Poids Total Saisi'}
+                  </span>
+                  <span className="font-bold text-slate-900">
+                    {selectedReport.total_weight ||
+                      (selectedReport.seizure_items
+                        ? selectedReport.seizure_items
+                            .reduce((s, it) => s + (Number(it.total_weight || it.weight) || 0), 0)
+                            .toFixed(1)
+                        : '0.0')}{' '}
+                    kg
+                  </span>
+                </div>
+              </div>
+
+              {/* Établissement & Inspecteur metadata block */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 border border-slate-200 rounded-sm bg-white">
+                <div>
+                  <span className="text-[10px] text-slate-500 uppercase font-bold block mb-0.5">
+                    {isRtl ? 'المذبح / المنشأة' : "Établissement d'abattage"}
+                  </span>
+                  <p className="font-bold text-slate-900">
+                    {selectedReport.slaughterhouse_name ||
+                      selectedReport.slaughterhouses?.name_fr ||
+                      'Abattoir Communal Hussein Dey'}
+                  </p>
+                  <p className="text-[11px] text-slate-500 font-mono">
+                    {selectedReport.commune_name ||
+                      selectedReport.slaughterhouses?.communes?.name_fr ||
+                      'Alger (Code 16)'}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-500 uppercase font-bold block mb-0.5">
+                    {isRtl ? 'الطبيب البيطري المفتش' : 'Praticien Inspecteur'}
+                  </span>
+                  <p className="font-bold text-slate-900">
+                    {selectedReport.inspector_name ||
+                      selectedReport.inspector?.full_name ||
+                      user?.fullName ||
+                      'Dr. Mohamed Benali'}
+                  </p>
+                  <p className="text-[11px] text-slate-500 font-mono">
+                    {selectedReport.inspector?.email || user?.email || 'vet@sante-animale.dz'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Seizure Items Detailed Sub-Table */}
+              <div className="border border-slate-300 rounded-sm overflow-hidden">
+                <div className="bg-slate-100 px-3 py-2 border-b border-slate-300 flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-800">
+                    {isRtl
+                      ? 'تفاصيل الآفات والحجوزات الصحية المسجلة'
+                      : 'RELEVÉ DÉTAILLÉ DES SAISIES SANITAIRES'}
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500">
+                    {(selectedReport.seizure_items?.length || 0)}{' '}
+                    {isRtl ? 'سطور مسجلة' : 'ligne(s)'}
+                  </span>
+                </div>
+
+                {selectedReport.seizure_items && selectedReport.seizure_items.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-start border-collapse text-[11px]">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[9px] font-bold">
+                          <th className="py-2 px-2.5 text-start">{isRtl ? 'النوع' : 'Espèce'}</th>
+                          <th className="py-2 px-2.5 text-start">{isRtl ? 'المرض / الآفة' : 'Maladie / Lésion'}</th>
+                          <th className="py-2 px-2.5 text-start">{isRtl ? 'العضو المصاب' : 'Organe'}</th>
+                          <th className="py-2 px-2.5 text-start">{isRtl ? 'قرار الحجز' : 'Décision / Sévérité'}</th>
+                          <th className="py-2 px-2.5 text-end">{isRtl ? 'العدد (قطع)' : 'Quantité (Pièces)'}</th>
+                          <th className="py-2 px-2.5 text-end">{isRtl ? 'الوزن (كغ)' : 'Poids (kg)'}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200 font-mono bg-white">
+                        {selectedReport.seizure_items.map((it, idx) => {
+                          const speciesName =
+                            it.species?.name_fr || it.species_name || 'Bovin';
+                          const diseaseName =
+                            it.diseases?.name_fr || it.disease_name || 'Hydatidose';
+                          const isMdo = Boolean(it.diseases?.is_mdo || it.is_mdo);
+                          const organName =
+                            it.organs?.name_fr || it.organ_name || 'Foie';
+                          const severityCode = it.severity || '1C';
+                          const qty = it.total_quantity || it.quantity || 1;
+                          const weight = Number(it.total_weight || it.weight || 0).toFixed(1);
+
+                          return (
+                            <tr key={it.id || idx} className="hover:bg-slate-50">
+                              {/* Espèce */}
+                              <td className="py-2 px-2.5 font-sans font-medium text-slate-900">
+                                {speciesName}
+                              </td>
+
+                              {/* Maladie */}
+                              <td className="py-2 px-2.5 font-sans">
+                                <span className="font-semibold text-slate-900">{diseaseName}</span>
+                                {isMdo && (
+                                  <span className="ms-1.5 px-1 py-0.2 rounded-sm text-[9px] font-mono font-bold bg-red-100 text-red-800 border border-red-300">
+                                    MDO
+                                  </span>
+                                )}
+                              </td>
+
+                              {/* Organe */}
+                              <td className="py-2 px-2.5 font-sans text-slate-700">
+                                {organName}
+                              </td>
+
+                              {/* Sévérité */}
+                              <td className="py-2 px-2.5 whitespace-nowrap">
+                                {severityCode === '2C' ? (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-red-50 text-red-800 border border-red-200">
+                                    2C (Saisie totale)
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                    1C (Saisie partielle)
+                                  </span>
+                                )}
+                              </td>
+
+                              {/* Quantité */}
+                              <td className="py-2 px-2.5 text-end font-bold text-slate-800">
+                                {qty}
+                              </td>
+
+                              {/* Poids */}
+                              <td className="py-2 px-2.5 text-end font-bold text-slate-900">
+                                {weight} kg
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-slate-400 text-xs">
+                    {isRtl
+                      ? 'لا توجد بيانات تفصيلية للحجوزات لهذا المحضر.'
+                      : 'Aucune saisie détaillée associée à ce procès-verbal.'}
+                  </div>
+                )}
+
+                {/* Sub-Table Footer */}
+                {selectedReport.seizure_items && selectedReport.seizure_items.length > 0 && (
+                  <div className="bg-slate-50 px-3 py-2 border-t border-slate-200 text-[10px] font-mono text-slate-700 flex justify-between items-center">
+                    <span>
+                      TOTAL PIÈCES :{' '}
+                      <strong>
+                        {selectedReport.seizure_items.reduce(
+                          (sum, it) => sum + (Number(it.total_quantity || it.quantity) || 0),
+                          0
+                        )}
+                      </strong>
+                    </span>
+                    <span>
+                      POIDS TOTAL SAISI :{' '}
+                      <strong className="text-slate-900 text-[11px]">
+                        {selectedReport.seizure_items
+                          .reduce(
+                            (sum, it) => sum + (Number(it.total_weight || it.weight) || 0),
+                            0
+                          )
+                          .toFixed(1)}{' '}
+                        kg
+                      </strong>
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Observations & Clinical Notes */}
+              {selectedReport.clinical_notes && (
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-sm">
+                  <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1">
+                    {isRtl ? 'الملاحظات والنتائج العيانية' : 'Observations cliniques / Ante & Post-Mortem'}
+                  </span>
+                  <p className="font-mono text-slate-800 text-[11px] whitespace-pre-wrap leading-relaxed">
+                    {selectedReport.clinical_notes}
+                  </p>
+                </div>
+              )}
+
+              {/* Validation Remarks / Wilaya Visa */}
+              {selectedReport.validation_remarks ? (
+                <div className="p-3 bg-emerald-50/70 border border-emerald-300 rounded-sm">
+                  <div className="flex items-center gap-1.5 text-emerald-900 font-bold uppercase text-[10px] mb-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>
+                      {isRtl ? 'تأشيرة وملاحظات مفتشية الولاية (DSV)' : "Visa & Décision de l'Inspecteur de Wilaya"}
+                    </span>
+                  </div>
+                  <p className="font-mono text-emerald-950 text-[11px] leading-relaxed">
+                    {selectedReport.validation_remarks}
+                  </p>
+                </div>
+              ) : (
+                <div className="p-2.5 bg-slate-50 border border-dashed border-slate-300 rounded-sm text-[10px] font-mono text-slate-500 flex items-center justify-between">
+                  <span>
+                    {selectedReport.status === 'DRAFT'
+                      ? (isRtl ? 'المحضر في حالة مسودة — لم يتم إرساله للولاية بعد.' : 'PV en mode brouillon — En attente de soumission à la Wilaya.')
+                      : (isRtl ? 'في انتظار مراجعة وتأشيرة مفتشية الولاية.' : 'En attente de visa officiel par l\'inspection vétérinaire de Wilaya.')}
+                  </span>
+                  <span className="text-slate-400 font-bold">DSV-VISA</span>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer Controls */}
+            <div className="p-3 bg-slate-100 border-t border-slate-300 flex items-center justify-between">
+              {/* Left Edit Button (Active ONLY for DRAFT status) */}
+              <div>
+                {selectedReport.status === 'DRAFT' ? (
+                  <button
+                    onClick={() => handleOpenEditModal(selectedReport)}
+                    className="px-3 py-1.5 rounded-sm bg-[#0c4a6e] hover:bg-[#072c41] text-white text-xs font-semibold flex items-center gap-1.5 border border-[#09354f] cursor-pointer shadow-sm transition-colors"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    <span>{isRtl ? 'تعديل المحضر (مسودة)' : 'Modifier le PV (Brouillon)'}</span>
+                  </button>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 font-mono">
+                    <Lock className="w-3.5 h-3.5 text-slate-400" />
+                    <span>
+                      {isRtl
+                        ? 'محضر مقفل رسمياً (غير قابل للتعديل)'
+                        : 'PV verrouillé (Non modifiable)'}
+                    </span>
+                  </span>
+                )}
+              </div>
+
+              {/* Close Button */}
+              <button
+                onClick={() => setIsViewModalOpen(false)}
+                className="px-3 py-1.5 rounded-sm border border-slate-300 bg-white hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer"
+              >
+                {isRtl ? 'إغلاق' : 'Fermer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODAL: NOUVELLE DÉCLARATION / SAISIE OU ÉDITION PV (FORM)
          ========================================================================= */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-none">
@@ -808,9 +1271,9 @@ export default function VeterinarianDashboard() {
                 <ClipboardList className="w-4 h-4 text-[#0c4a6e]" />
                 <div>
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
-                    {isRtl
-                      ? 'محضر فحص صحي بيطري جديد (PV)'
-                      : "NOUVEAU PROCÈS-VERBAL D'INSPECTION D'ABATTOIR"}
+                    {editingReportId
+                      ? (isRtl ? 'تعديل محضر التفتيش الصحي البيطري' : 'MODIFICATION DU PROCÈS-VERBAL (ÉDITION BROUILLON)')
+                      : (isRtl ? 'محضر فحص صحي بيطري جديد (PV)' : "NOUVEAU PROCÈS-VERBAL D'INSPECTION D'ABATTOIR")}
                   </h3>
                   <p className="text-[10px] text-slate-500 font-mono">
                     {isRtl
@@ -820,7 +1283,10 @@ export default function VeterinarianDashboard() {
                 </div>
               </div>
               <button
-                onClick={() => setIsCreateModalOpen(false)}
+                onClick={() => {
+                  setIsCreateModalOpen(false);
+                  setEditingReportId(null);
+                }}
                 className="p-1 rounded-sm text-slate-400 hover:text-slate-700 hover:bg-slate-200 cursor-pointer"
               >
                 <X className="w-4 h-4" />
@@ -880,7 +1346,7 @@ export default function VeterinarianDashboard() {
                 {/* Initial Status */}
                 <div>
                   <label className="block text-[10px] font-bold uppercase text-slate-600 mb-1">
-                    {isRtl ? 'حالة الحفظ' : 'Statut initial du PV'}
+                    {isRtl ? 'حالة الحفظ' : 'Statut du PV'}
                   </label>
                   <select
                     value={formData.status}
@@ -989,7 +1455,7 @@ export default function VeterinarianDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200">
-                      {seizureRows.map((row, idx) => (
+                      {seizureRows.map((row) => (
                         <tr key={row.id} className="hover:bg-slate-50">
                           {/* Espèce */}
                           <td className="p-1.5">
@@ -1118,7 +1584,10 @@ export default function VeterinarianDashboard() {
               <div className="pt-2 border-t border-slate-200 flex items-center justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setIsCreateModalOpen(false)}
+                  onClick={() => {
+                    setIsCreateModalOpen(false);
+                    setEditingReportId(null);
+                  }}
                   className="px-3 py-1.5 rounded-sm border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold cursor-pointer"
                 >
                   {isRtl ? 'إلغاء' : 'Annuler'}
@@ -1136,132 +1605,16 @@ export default function VeterinarianDashboard() {
                   ) : (
                     <>
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>{isRtl ? 'حفظ المحضر' : 'Enregistrer le Procès-Verbal'}</span>
+                      <span>
+                        {editingReportId
+                          ? (isRtl ? 'حفظ التعديلات' : 'Enregistrer les modifications')
+                          : (isRtl ? 'حفظ المحضر' : 'Enregistrer le Procès-Verbal')}
+                      </span>
                     </>
                   )}
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* =========================================================================
-          MODAL: VIEW / CONSULTER DÉTAILS DU PV
-         ========================================================================= */}
-      {isViewModalOpen && selectedReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-none">
-          <div className="bg-white border border-slate-300 rounded-sm shadow-xl max-w-2xl w-full flex flex-col overflow-hidden animate-in fade-in">
-            {/* Header */}
-            <div className="bg-slate-100 px-4 py-3 border-b border-slate-300 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-[#0c4a6e]" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono">
-                  {selectedReport.reference_no || `PV-${selectedReport.id?.slice(0, 8)}`}
-                </h3>
-              </div>
-              <button
-                onClick={() => setIsViewModalOpen(false)}
-                className="p-1 rounded-sm text-slate-400 hover:text-slate-700 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Document Content */}
-            <div className="p-4 space-y-4 text-xs">
-              {/* Top metadata grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 bg-slate-50 border border-slate-200 rounded-sm font-mono text-[11px]">
-                <div>
-                  <span className="text-slate-400 block text-[9px] uppercase font-bold">Date</span>
-                  <span className="font-semibold text-slate-800">{selectedReport.inspection_date}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[9px] uppercase font-bold">Statut</span>
-                  <span className="font-semibold text-slate-800">{selectedReport.status}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[9px] uppercase font-bold">MDO</span>
-                  <span className="font-semibold text-slate-800">
-                    {selectedReport.is_urgent_mdo ? 'OUI (Urgence)' : 'Non'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[9px] uppercase font-bold">Poids Total</span>
-                  <span className="font-bold text-slate-900">
-                    {selectedReport.total_weight || '—'} kg
-                  </span>
-                </div>
-              </div>
-
-              {/* Slaughterhouse Info */}
-              <div className="p-3 border border-slate-200 rounded-sm">
-                <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1">
-                  {isRtl ? 'المذبح والموقع' : 'Établissement & Commune'}
-                </span>
-                <p className="font-bold text-slate-900">
-                  {selectedReport.slaughterhouse_name || selectedReport.slaughterhouses?.name_fr || 'Abattoir Communal'}
-                </p>
-                <p className="text-[11px] text-slate-500 font-mono">
-                  {selectedReport.commune_name || selectedReport.slaughterhouses?.communes?.name_fr || 'Alger (16)'}
-                </p>
-              </div>
-
-              {/* Seizure breakdown table if available */}
-              {selectedReport.seizure_items && selectedReport.seizure_items.length > 0 && (
-                <div className="border border-slate-200 rounded-sm overflow-hidden">
-                  <div className="bg-slate-100 px-3 py-1.5 font-bold text-[10px] uppercase text-slate-700">
-                    Détail des lésions et saisies
-                  </div>
-                  <table className="w-full text-start text-[11px]">
-                    <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-[9px] uppercase">
-                        <th className="py-1 px-2 text-start">Espèce</th>
-                        <th className="py-1 px-2 text-start">Maladie</th>
-                        <th className="py-1 px-2 text-start">Organe</th>
-                        <th className="py-1 px-2 text-start">Sévérité</th>
-                        <th className="py-1 px-2 text-end">Poids</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-mono">
-                      {selectedReport.seizure_items.map((it, idx) => (
-                        <tr key={idx}>
-                          <td className="py-1.5 px-2">{it.species?.name_fr || 'Bovin'}</td>
-                          <td className="py-1.5 px-2 font-bold">{it.diseases?.name_fr || 'Hydatidose'}</td>
-                          <td className="py-1.5 px-2">{it.organs?.name_fr || 'Foie'}</td>
-                          <td className="py-1.5 px-2">{it.severity || '1C'}</td>
-                          <td className="py-1.5 px-2 text-end font-bold text-slate-900">
-                            {it.total_weight} kg
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* Clinical Notes */}
-              {selectedReport.clinical_notes && (
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-sm">
-                  <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1">
-                    Notes cliniques
-                  </span>
-                  <p className="font-mono text-slate-700 text-[11px] whitespace-pre-wrap">
-                    {selectedReport.clinical_notes}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Footer */}
-            <div className="p-3 bg-slate-50 border-t border-slate-300 flex justify-end">
-              <button
-                onClick={() => setIsViewModalOpen(false)}
-                className="px-3 py-1.5 rounded-sm border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold cursor-pointer"
-              >
-                Fermer
-              </button>
-            </div>
           </div>
         </div>
       )}
