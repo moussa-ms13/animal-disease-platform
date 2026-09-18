@@ -63,4 +63,4 @@
 ## 5. Active Context & Technical Constraints
 - **Direction Handling:** Dynamic RTL (Arabic) and LTR (French) controlled via `i18n.language` and `document.documentElement.dir`.
 - **Form Path:** `/veterinarian/new-declaration`.
-- **Working Directory:** `C:\Users\moham\.gemini\antigravity-ide\scratch\animal-disease-platform`.
+- **Working Directory:** `C:\Users\moham\Source\animal-disease-platform`.
