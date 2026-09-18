@@ -1,8 +1,8 @@
-# Project Memory: Animal Disease Surveillance Platform
-# منصة المراقبة الوبائية للأمراض الحيوانية
+﻿# Project Memory: Animal Disease Surveillance Platform
+# المنصة الوطنية لمراقبة الأمراض الحيوانية في المذابح
 
 ## 1. Project Information
-- **Project Name:** Animal Disease Surveillance Platform (Plateforme Nationale de Surveillance Épidémiologique Animale)
+- **Project Name: Plateforme Nationale de Surveillance des Maladies Animales dans les Abattoirs / المنصة الوطنية لمراقبة الأمراض الحيوانية في المذابح
 - **Target Context:** National animal disease surveillance, outbreak tracking, and veterinary alert platform (Algeria / Maghreb context).
 - **Languages:** Bilingual Arabic (Default, RTL) and French (LTR).
 - **Architecture Methodology:** SDD-Pro (Spec-Driven Development) & UI/UX Pro Max Principles.
