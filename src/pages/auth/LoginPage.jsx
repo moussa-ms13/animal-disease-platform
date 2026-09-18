@@ -149,10 +149,7 @@ export default function LoginPage() {
               Système de Suivi Sanitaire & Épidémiologique des Abattoirs
             </h2>
 
-            {/* Utilitarian Policy Note */}
-            <div className="mt-5 p-3 bg-[#0f1d2c]/80 border-l-2 border-slate-400 text-xs text-slate-300 font-mono leading-relaxed rounded-sm">
-              Réseau national d'épidémio-surveillance des abattoirs (MADR/DSV). Centralisation des saisies et notification obligatoire des zoonoses.
-            </div>
+
           </div>
 
           {/* Bottom Dense Status Block (Rigid Clinical Data Box) */}
