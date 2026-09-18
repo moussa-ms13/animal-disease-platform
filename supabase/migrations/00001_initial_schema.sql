@@ -1,8 +1,8 @@
 -- ============================================================================
 -- MIGRATION: 00001_initial_schema.sql
 -- Platform: National Surveillance Platform for Animal Diseases in Abattoirs
--- Target DB: PostgreSQL (Independent of Supabase auth.users)
--- Architecture: Custom Auth & Role-Based Access Control, Aggregated Surveillance Model
+-- Target DB: PostgreSQL / Supabase
+-- Architecture: Custom Auth & RBAC (Bypassing auth.users), Aggregated Surveillance Model
 -- ============================================================================
 
 -- Enable required cryptographic and UUID generation extensions
@@ -10,53 +10,45 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ============================================================================
--- 1. ENUM TYPES
+-- 1. ENUM TYPES (Direct standard declarations)
 -- ============================================================================
 
--- 1.1 Inspection Report Lifecycle Workflow Status
-DO  BEGIN
-  CREATE TYPE report_status AS ENUM (
-    'DRAFT',
-    'SUBMITTED_TO_WILAYA',
-    'RETURNED_FOR_CORRECTION',
-    'VALIDATED'
-  );
-EXCEPTION
-  WHEN duplicate_object THEN NULL;
-END ;
+CREATE TYPE user_role AS ENUM (
+  'VETERINARIAN',
+  'WILAYA_INSPECTOR',
+  'MINISTRY_ADMIN',
+  'SYSTEM_ADMIN'
+);
 
--- 1.2 Seizure Severity Classification (1C: Saisie Partielle, 2C: Saisie Totale)
-DO  BEGIN
-  CREATE TYPE seizure_severity AS ENUM (
-    '1C',
-    '2C'
-  );
-EXCEPTION
-  WHEN duplicate_object THEN NULL;
-END ;
+CREATE TYPE report_status AS ENUM (
+  'DRAFT',
+  'SUBMITTED_TO_WILAYA',
+  'RETURNED_FOR_CORRECTION',
+  'VALIDATED'
+);
 
--- 1.3 Slaughter Facility Types
-DO  BEGIN
-  CREATE TYPE facility_type AS ENUM (
-    'ABATTOIR_COMMUNAL',
-    'ABATTOIR_PRIVE',
-    'TUERIE'
-  );
-EXCEPTION
-  WHEN duplicate_object THEN NULL;
-END ;
+CREATE TYPE seizure_severity AS ENUM (
+  '1C',
+  '2C'
+);
+
+CREATE TYPE facility_type AS ENUM (
+  'ABATTOIR_COMMUNAL',
+  'ABATTOIR_PRIVE',
+  'TUERIE'
+);
 
 -- ============================================================================
 -- 2. UTILITY FUNCTIONS & TRIGGERS
 -- ============================================================================
 
 CREATE OR REPLACE FUNCTION trigger_set_updated_at()
-RETURNS TRIGGER AS 
+RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
- LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql;
 
 -- ============================================================================
 -- 3. REFERENCE DATA TABLES (Bilingual Dictionaries)
