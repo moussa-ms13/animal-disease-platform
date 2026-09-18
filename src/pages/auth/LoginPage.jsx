@@ -339,41 +339,23 @@ export default function LoginPage() {
               </button>
             </form>
 
-            {/* Quick Role Tester (Dense Utilitarian Buttons) */}
+            {/* Quick Access (Veterinarian Demo Account) */}
             <div className="mt-4 pt-3 border-t border-slate-200 text-center">
               <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block mb-1.5">
-                {i18n.language === 'ar' ? 'حسابات التجربة السريعة' : 'Comptes de test rapide (Rôles)'}
+                {i18n.language === 'ar' ? 'حساب تجريبي سريع' : 'Accès Rapide Démonstration'}
               </span>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 text-[11px]">
-                <button
-                  type="button"
-                  onClick={() => setDemoAccount('vet@sante-animale.dz')}
-                  className="px-2 py-1 rounded-sm bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-medium transition-colors cursor-pointer truncate"
-                >
-                  Vétérinaire
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDemoAccount('wilaya@sante-animale.dz')}
-                  className="px-2 py-1 rounded-sm bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-medium transition-colors cursor-pointer truncate"
-                >
-                  Wilaya
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDemoAccount('central@sante-animale.dz')}
-                  className="px-2 py-1 rounded-sm bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-medium transition-colors cursor-pointer truncate"
-                >
-                  Ministère
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDemoAccount('admin@sante-animale.dz')}
-                  className="px-2 py-1 rounded-sm bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-medium transition-colors cursor-pointer truncate"
-                >
-                  Admin
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setDemoAccount('vet@sante-animale.dz')}
+                className="w-full py-1.5 px-3 rounded-sm bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 hover:text-slate-900 font-medium text-xs transition-colors cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-700 shrink-0"></span>
+                <span>
+                  {i18n.language === 'ar'
+                    ? 'تسجيل سريع: حساب الطبيب البيطري (المذبح)'
+                    : 'Praticien Vétérinaire (vet@sante-animale.dz)'}
+                </span>
+              </button>
             </div>
           </div>
 
