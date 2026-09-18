@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import HomePage from './pages/HomePage';
@@ -28,7 +28,7 @@ export default function App() {
         <footer className="border-t border-slate-200 bg-white py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
             <p>© 2026 الجمهورية الجزائرية الديمقراطية الشعبية - نظام المراقبة الوبائية البيطرية</p>
-            <p>Conçu selon les principes SDD-Pro & UI/UX Pro Max</p>
+            <p>Ministère de l'Agriculture et du Développement Rural — Direction des Services Vétérinaires</p>
           </div>
         </footer>
       </div>
