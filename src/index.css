@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,90 +6,99 @@
 
 @layer base {
   :root {
-    --color-primary: 5 150 105;
-    --color-surface-bg: 248 250 252;
+    --color-primary: 29 82 136; /* #1d5288 DHIS2 Core */
+    --color-surface-bg: 244 246 248; /* #f4f6f8 DHIS2 Canvas */
     --color-surface-card: 255 255 255;
-    --color-text-main: 15 23 42;
-    --color-text-muted: 100 116 139;
-    --color-border: 226 232 240;
-  }
-
-  .dark {
-    --color-surface-bg: 15 23 42;
-    --color-surface-card: 30 41 59;
-    --color-text-main: 248 250 252;
-    --color-text-muted: 148 163 184;
-    --color-border: 51 65 85;
+    --color-text-main: 15 23 42; /* Dark slate */
+    --color-text-muted: 71 85 105;
+    --color-border: 203 213 225; /* #cbd5e1 Crisp border */
   }
 
   html {
-    font-family: 'Inter', 'Cairo', system-ui, sans-serif;
-    scroll-behavior: smooth;
+    font-family: 'Roboto', 'Inter', 'Cairo', system-ui, sans-serif;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-size: 14px; /* DHIS2 enterprise standard density */
   }
 
   html[dir="rtl"] body {
-    font-family: 'Cairo', 'Inter', system-ui, sans-serif;
+    font-family: 'Cairo', 'Roboto', system-ui, sans-serif;
   }
 
   body {
     margin: 0;
     min-height: 100vh;
-    background-color: #f8fafc;
+    background-color: #f4f6f8;
     color: #0f172a;
   }
 }
 
 @layer components {
-  /* UI/UX Pro Max Glass Card */
-  .glass-card {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+  /* DHIS2 / WHO Clinical Card */
+  .clinical-card {
+    @apply bg-white border border-slate-200 rounded-sm shadow-clinical;
   }
 
-  /* High-contrast status badges */
-  .badge-alert {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200;
+  /* Utilitarian Form Controls */
+  .clinical-input {
+    @apply w-full h-8 text-xs sm:text-sm px-2.5 bg-white border border-slate-300 rounded-sm text-slate-900 focus:outline-none focus:border-dhis-700 focus:ring-1 focus:ring-dhis-700 disabled:bg-slate-100 disabled:text-slate-400 transition-colors;
   }
 
-  .badge-danger {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200;
+  .clinical-select {
+    @apply w-full h-8 text-xs sm:text-sm px-2.5 bg-white border border-slate-300 rounded-sm text-slate-900 focus:outline-none focus:border-dhis-700 focus:ring-1 focus:ring-dhis-700 cursor-pointer font-normal;
   }
 
-  .badge-success {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200;
+  .clinical-label {
+    @apply block text-xs font-semibold text-slate-700 mb-1;
   }
 
-  /* Interactive Elements */
+  /* Standard Utilitarian Buttons */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-soft transition-all duration-200 active:scale-[0.99] cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center gap-1.5 h-8 px-3.5 rounded-sm bg-dhis-700 hover:bg-dhis-800 active:bg-dhis-900 text-white text-xs font-semibold border border-dhis-800 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-dhis-700 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-medium border border-slate-200 shadow-soft-sm transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center gap-1.5 h-8 px-3.5 rounded-sm bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-300 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-slate-400 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-1.5 h-8 px-3.5 rounded-sm bg-red-700 hover:bg-red-800 text-white text-xs font-semibold border border-red-800 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-red-600;
   }
 }
 
-/* Custom Sleek Scrollbar */
+/* Utilitarian Table Styles */
+table.clinical-table {
+  @apply w-full text-xs text-start border-collapse border border-slate-200;
+}
+
+table.clinical-table th {
+  @apply bg-slate-100 text-slate-700 font-semibold px-3 py-2 border-b border-slate-300 text-start uppercase tracking-wider text-[11px];
+}
+
+table.clinical-table td {
+  @apply px-3 py-2 border-b border-slate-200 text-slate-800 align-middle;
+}
+
+table.clinical-table tr:hover {
+  @apply bg-slate-50;
+}
+
+/* Clean Utilitarian Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #e2e8f0;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
+  background: #94a3b8;
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #64748b;
 }

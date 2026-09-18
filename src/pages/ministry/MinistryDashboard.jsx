@@ -1,57 +1,120 @@
-import React from 'react';
+﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Landmark, MapPin, Activity, BarChart3, Download } from 'lucide-react';
+import { Landmark, MapPin, Activity, Download, FileSpreadsheet, ShieldAlert } from 'lucide-react';
+import PageHeader from '../../components/ui/PageHeader';
+import MetricTile from '../../components/ui/MetricTile';
+import ClinicalCard from '../../components/ui/ClinicalCard';
+import StatusBadge from '../../components/ui/StatusBadge';
+import ClinicalButton from '../../components/ui/ClinicalButton';
 
 export default function MinistryDashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language === 'ar';
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <span className="badge-alert mb-2">{t('roles.ministry')}</span>
-          <h2 className="text-2xl font-bold text-slate-900">{t('nav.ministry')}</h2>
-          <p className="text-sm text-slate-500">
-            الخريطة الوبائية الوطنية، التحليلات الجغرافية وإصدار القرارات الصحية المركزية
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="btn-secondary text-xs">
-            <Download className="w-4 h-4" />
-            <span>{t('actions.exportPDF')}</span>
-          </button>
-          <button className="btn-secondary text-xs">
-            <Download className="w-4 h-4" />
-            <span>{t('actions.exportExcel')}</span>
-          </button>
-        </div>
+    <div className="space-y-4">
+      <PageHeader
+        category={t('roles.ministry')}
+        badge="Direction des Services Vétérinaires (Centrale)"
+        badgeVariant="danger"
+        title={t('nav.ministry')}
+        subtitle={
+          isRtl
+            ? 'الرصد الوبائي البيطري الوطني، متابعة معدلات الحجز الصحي بالمذابح، الخريطة الوبائية للولايات وإصدار الإنذارات الصحية المركزية.'
+            : 'Agrégation nationale des données sanitaires d’abattoir, veille épidémiologique et gestion des foyers d’alerte.'
+        }
+        actions={
+          <div className="flex items-center gap-2">
+            <ClinicalButton variant="secondary" size="sm" icon={Download}>
+              {t('actions.exportPDF')}
+            </ClinicalButton>
+            <ClinicalButton variant="secondary" size="sm" icon={FileSpreadsheet}>
+              {t('actions.exportExcel')}
+            </ClinicalButton>
+          </div>
+        }
+      />
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <MetricTile
+          label={isRtl ? 'إجمالي محاضر الفحص الوطنية' : 'Procès-verbaux nationaux'}
+          value="1,248"
+          subtext={isRtl ? 'منذ بداية السنة' : 'Exercice en cours'}
+          icon={Activity}
+          variant="dhis"
+        />
+        <MetricTile
+          label={isRtl ? 'ولايات تحت المراقبة المكثفة' : 'Wilayas sous surveillance'}
+          value="14"
+          subtext={isRtl ? 'بؤر محتملة مسجلة' : 'Seuils d’alerte dépassés'}
+          icon={ShieldAlert}
+          variant="red"
+        />
+        <MetricTile
+          label={isRtl ? 'بؤر تمت السيطرة عليها' : 'Foyers circonscrits'}
+          value="29"
+          subtext={isRtl ? 'تدخلات بيطرية ناجزة' : 'Mesures sanitaires prises'}
+          icon={Landmark}
+          variant="emerald"
+        />
+        <MetricTile
+          label={isRtl ? 'نسبة الإخطار الإلكتروني' : 'Taux de notification'}
+          value="94.2%"
+          subtext={isRtl ? 'ربط إلكتروني مباشر' : 'Mise à jour sous 24h'}
+          icon={Activity}
+          variant="dhis"
+        />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="glass-card p-5 rounded-2xl">
-          <span className="text-xs font-semibold text-slate-500">إجمالي البلاغات الوطنية</span>
-          <p className="text-2xl font-bold text-slate-900 mt-2">1,248</p>
-        </div>
-        <div className="glass-card p-5 rounded-2xl">
-          <span className="text-xs font-semibold text-slate-500">ولايات تحت المراقبة</span>
-          <p className="text-2xl font-bold text-amber-600 mt-2">14</p>
-        </div>
-        <div className="glass-card p-5 rounded-2xl">
-          <span className="text-xs font-semibold text-slate-500">بؤر تم تطويقها</span>
-          <p className="text-2xl font-bold text-emerald-600 mt-2">29</p>
-        </div>
-        <div className="glass-card p-5 rounded-2xl">
-          <span className="text-xs font-semibold text-slate-500">نسبة التغطية البيطرية</span>
-          <p className="text-2xl font-bold text-teal-600 mt-2">94.2%</p>
-        </div>
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        {/* Epidemic GIS / Spatial Map Placeholder Card */}
+        <ClinicalCard
+          title={isRtl ? 'الخريطة الوبائية الوطنية (SIG)' : 'Système d’Information Géographique (SIG)'}
+          subtitle={isRtl ? 'توزيع بؤر الحجز الصحي حسب الولايات' : 'Cartographie des saisies par Wilaya'}
+          icon={MapPin}
+          className="lg:col-span-2"
+        >
+          <div className="bg-slate-50 border border-slate-200 p-8 text-center rounded-sm">
+            <MapPin className="w-8 h-8 text-dhis-700 mx-auto mb-2" />
+            <h4 className="text-xs font-bold text-slate-800">
+              {isRtl ? 'نظام الإسقاط الجغرافي الوبائي' : 'Module de Cartographie Épidémiologique'}
+            </h4>
+            <p className="text-[11px] text-slate-500 max-w-md mx-auto mt-1">
+              {isRtl
+                ? 'عرض تفاعلي مباشر لكثافة الحجوزات البيطرية (داء المشوكات، السل البقري) حسب البلديات والمذابح.'
+                : 'Projection spatiale des taux d’incidence par Wilaya et abattoir communal.'}
+            </p>
+          </div>
+        </ClinicalCard>
 
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-soft text-center py-12">
-        <MapPin className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-        <h3 className="text-base font-semibold text-slate-700">الخريطة الوبائية التفاعلية (SIG Épidémiologique)</h3>
-        <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
-          المكون التفاعلي للرصد الجغرافي الحيوي للولايات والبؤر سيتم ربطه في المراحل القادمة
-        </p>
+        {/* National Alerts Feed */}
+        <ClinicalCard
+          title={isRtl ? 'آخر إخطارات MDO العاجلة' : 'Dernières alertes MDO'}
+          subtitle={isRtl ? 'إشعارات التدخل العاجل' : 'Flux d’urgence sanitaire'}
+          icon={ShieldAlert}
+        >
+          <div className="space-y-2.5 text-xs">
+            <div className="p-2 border border-red-200 bg-red-50 rounded-sm">
+              <div className="flex items-center justify-between font-bold text-red-900">
+                <span>Wilaya d'Alger</span>
+                <StatusBadge variant="danger">Tuberculose</StatusBadge>
+              </div>
+              <p className="text-[11px] text-red-800 mt-1">
+                Suspicion saisie totale bovine à Hussein Dey. Échantillon acheminé au laboratoire central.
+              </p>
+            </div>
+
+            <div className="p-2 border border-amber-200 bg-amber-50 rounded-sm">
+              <div className="flex items-center justify-between font-bold text-amber-900">
+                <span>Wilaya de Sétif</span>
+                <StatusBadge variant="warning">Hydatidose</StatusBadge>
+              </div>
+              <p className="text-[11px] text-amber-800 mt-1">
+                Hausse des saisies d'abattoir ovines (taux supérieur à 8%).
+              </p>
+            </div>
+          </div>
+        </ClinicalCard>
       </div>
     </div>
   );

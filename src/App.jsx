@@ -12,9 +12,9 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-100 selection:text-emerald-900">
+      <div className="min-h-screen flex flex-col bg-[#f4f6f8] text-slate-900 selection:bg-dhis-200 selection:text-dhis-900">
         <Navbar />
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-4 lg:px-6 py-5">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -25,10 +25,14 @@ export default function App() {
             <Route path="/admin/*" element={<AdminDashboard />} />
           </Routes>
         </main>
-        <footer className="border-t border-slate-200 bg-white py-6">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-            <p>© 2026 الجمهورية الجزائرية الديمقراطية الشعبية - نظام المراقبة الوبائية البيطرية</p>
-            <p>Ministère de l'Agriculture et du Développement Rural — Direction des Services Vétérinaires</p>
+        <footer className="border-t border-slate-200 bg-white py-3">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+            <p className="font-medium text-slate-600">
+              © 2026 الجمهورية الجزائرية الديمقراطية الشعبية — وزارة الفلاحة والتنمية الريفية
+            </p>
+            <p className="text-[11px] text-slate-400">
+              Direction des Services Vétérinaires — Système d'Information Sanitaire Vétérinaire
+            </p>
           </div>
         </footer>
       </div>

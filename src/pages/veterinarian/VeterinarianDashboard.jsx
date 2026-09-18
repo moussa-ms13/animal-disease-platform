@@ -1,75 +1,134 @@
-import React from 'react';
+﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Stethoscope, PlusCircle, FileText, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import {
+  Stethoscope,
+  PlusCircle,
+  FileText,
+  AlertTriangle,
+  CheckCircle2,
+  Building2,
+  Calendar,
+} from 'lucide-react';
+import PageHeader from '../../components/ui/PageHeader';
+import MetricTile from '../../components/ui/MetricTile';
+import ClinicalCard from '../../components/ui/ClinicalCard';
+import ClinicalButton from '../../components/ui/ClinicalButton';
 
 export default function VeterinarianDashboard() {
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <span className="badge-success mb-2">{t('roles.veterinarian')}</span>
-          <h2 className="text-2xl font-bold text-slate-900">{t('nav.veterinarian')}</h2>
-          <p className="text-sm text-slate-500">
-            واجهة التصريح بالأمراض الحيوانية ومتابعة البلاغات البيطرية الميدانية
-          </p>
-        </div>
-        <Link
-          to="/veterinarian/new-declaration"
-          className="btn-primary"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>{t('actions.newDeclaration')}</span>
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="glass-card p-5 rounded-2xl">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">البلاغات المسجلة / Déclarations</span>
-            <FileText className="w-5 h-5 text-emerald-600" />
-          </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2">12</p>
-          <span className="text-xs text-slate-500 mt-1 block">خلال الشهر الجاري</span>
-        </div>
-
-        <div className="glass-card p-5 rounded-2xl">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">إنذارات عاجلة / Alertes</span>
-            <AlertTriangle className="w-5 h-5 text-amber-600" />
-          </div>
-          <p className="text-2xl font-bold text-amber-600 mt-2">2</p>
-          <span className="text-xs text-amber-700 mt-1 block">تتطلب أخذ عينات مخبرية</span>
-        </div>
-
-        <div className="glass-card p-5 rounded-2xl">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">حالات مصادق عليها / Validées</span>
-            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-          </div>
-          <p className="text-2xl font-bold text-emerald-600 mt-2">10</p>
-          <span className="text-xs text-emerald-700 mt-1 block">من طرف المفتشية الولائية</span>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-soft">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-base font-semibold text-slate-800">
-            مخطط سريان البيانات البيطرية (Veterinarian Spec Foundation)
-          </h3>
-          <Link
-            to="/veterinarian/new-declaration"
-            className="text-xs font-bold text-emerald-600 hover:text-emerald-700 underline"
-          >
-            فتح استمارة الحجز الصحي / Ouvrir la fiche
+    <div className="space-y-4">
+      {/* Institutional Page Header */}
+      <PageHeader
+        category={t('roles.veterinarian')}
+        badge="Poste d'inspection sanitaire"
+        badgeVariant="dhis"
+        title={t('nav.veterinarian')}
+        subtitle="Saisie des déclarations de saisies sanitaires, suivi des prélèvements et notifications de suspicion en abattoir."
+        actions={
+          <Link to="/veterinarian/new-declaration">
+            <ClinicalButton variant="primary" icon={PlusCircle}>
+              {t('actions.newDeclaration')}
+            </ClinicalButton>
           </Link>
-        </div>
-        <p className="text-sm text-slate-600 leading-relaxed">
-          تم تفعيل استمارة الفحص الصحي وحجوزات المذابح (CaseEntryForm) مع التبديل الديناميكي للفصائل، الأعضاء، والقرارات الصحية وفق معايير SDD-Pro وUI/UX Pro Max.
-        </p>
+        }
+      />
+
+      {/* Utilitarian Operational KPI Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <MetricTile
+          label="Procès-verbaux saisis"
+          value="12"
+          subtext="Mois en cours (Abattoir Hussein Dey)"
+          icon={FileText}
+          variant="dhis"
+        />
+        <MetricTile
+          label="Alertes prioritaires (MDO)"
+          value="2"
+          subtext="Échantillonnage de laboratoire requis"
+          icon={AlertTriangle}
+          variant="amber"
+        />
+        <MetricTile
+          label="Dossiers validés (Wilaya)"
+          value="10"
+          subtext="Inspection de Wilaya d'Alger"
+          icon={CheckCircle2}
+          variant="emerald"
+        />
       </div>
+
+      {/* Active Worklist & Instructions Card */}
+      <ClinicalCard
+        title="Dossiers récents & Transmission Wilaya"
+        subtitle="Statut d'acheminement des données sanitaires vers l'inspection de Wilaya"
+        icon={Building2}
+        action={
+          <Link to="/veterinarian/new-declaration" className="btn-secondary h-7 text-[11px]">
+            {t('actions.newDeclaration')}
+          </Link>
+        }
+      >
+        <div className="overflow-x-auto">
+          <table className="clinical-table">
+            <thead>
+              <tr>
+                <th>N° PV</th>
+                <th>Date</th>
+                <th>Établissement</th>
+                <th>Espèce</th>
+                <th>Motif Principal</th>
+                <th>Poids Saisi</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="font-mono font-bold text-dhis-800">PV-2026-0914</td>
+                <td>18/09/2026</td>
+                <td>Abattoir Hussein Dey</td>
+                <td>BOVIN</td>
+                <td>Hydatidose hépatique (1C)</td>
+                <td className="font-mono">4.5 kg</td>
+                <td>
+                  <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-semibold border rounded-sm bg-emerald-50 text-emerald-800 border-emerald-300">
+                    Transmis
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td className="font-mono font-bold text-dhis-800">PV-2026-0912</td>
+                <td>17/09/2026</td>
+                <td>Abattoir Hussein Dey</td>
+                <td>OVIN</td>
+                <td>Suspicion Tuberculose (2C)</td>
+                <td className="font-mono">18.2 kg</td>
+                <td>
+                  <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-semibold border rounded-sm bg-amber-50 text-amber-800 border-amber-300">
+                    En attente Wilaya
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td className="font-mono font-bold text-dhis-800">PV-2026-0909</td>
+                <td>15/09/2026</td>
+                <td>Abattoir Hussein Dey</td>
+                <td>BOVIN</td>
+                <td>Fasciolose hépatique (1C)</td>
+                <td className="font-mono">3.8 kg</td>
+                <td>
+                  <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-semibold border rounded-sm bg-emerald-50 text-emerald-800 border-emerald-300">
+                    Validé
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ClinicalCard>
     </div>
   );
 }

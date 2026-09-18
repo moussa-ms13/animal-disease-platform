@@ -1,47 +1,105 @@
-import React from 'react';
+﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserCog, Users, ShieldCheck, Database, KeyRound } from 'lucide-react';
+import { UserCog, Users, ShieldCheck, Database, KeyRound, UserPlus } from 'lucide-react';
+import PageHeader from '../../components/ui/PageHeader';
+import MetricTile from '../../components/ui/MetricTile';
+import ClinicalCard from '../../components/ui/ClinicalCard';
+import StatusBadge from '../../components/ui/StatusBadge';
+import ClinicalButton from '../../components/ui/ClinicalButton';
 
 export default function AdminDashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language === 'ar';
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <span className="badge-alert mb-2">{t('roles.admin')}</span>
-          <h2 className="text-2xl font-bold text-slate-900">{t('nav.admin')}</h2>
-          <p className="text-sm text-slate-500">
-            إدارة الحسابات، الصلاحيات، سجل التدقيق وإعدادات الربط مع قاعدة البيانات Supabase
-          </p>
-        </div>
+    <div className="space-y-4">
+      <PageHeader
+        category={t('roles.admin')}
+        badge="Administration Centrale"
+        badgeVariant="neutral"
+        title={t('nav.admin')}
+        subtitle={
+          isRtl
+            ? 'إدارة حسابات المستخدمين، تعيين المفتشين بالمذابح الولائية، مراقبة اتصالات قاعدة البيانات وسجل العمليات.'
+            : 'Gestion des accès, paramétrage des abattoirs communaux et supervision des connexions Supabase.'
+        }
+        actions={
+          <ClinicalButton variant="primary" size="sm" icon={UserPlus}>
+            {isRtl ? 'إضافة مستخدم جديد' : 'Nouvel utilisateur'}
+          </ClinicalButton>
+        }
+      />
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <MetricTile
+          label={isRtl ? 'الأطباء البياطرة المسجلون' : 'Vétérinaires inscrits'}
+          value="1,890"
+          subtext={isRtl ? 'ممارسون ومفتشون عموميون' : 'Comptes actifs'}
+          icon={Users}
+          variant="dhis"
+        />
+        <MetricTile
+          label={isRtl ? 'مفتشيات الولايات' : 'Inspections de Wilaya'}
+          value="58"
+          subtext={isRtl ? 'تغطية وطنية شاملة' : '100% connectées'}
+          icon={ShieldCheck}
+          variant="emerald"
+        />
+        <MetricTile
+          label={isRtl ? 'حالة قاعدة بيانات Supabase' : 'Service BaaS / Supabase'}
+          value="Opérationnel"
+          subtext="PostgreSQL & RLS actifs"
+          icon={Database}
+          variant="dhis"
+        />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="glass-card p-5 rounded-2xl">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">الأطباء البياطرة المسجلون</span>
-            <Users className="w-5 h-5 text-indigo-600" />
-          </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2">1,890</p>
+      <ClinicalCard
+        title={isRtl ? 'إدارة المستخدمين والصلاحيات' : 'Comptes utilisateurs récents'}
+        subtitle={isRtl ? 'قائمة الحسابات النشطة في المنظومة' : 'Dernières attributions de rôles'}
+        icon={UserCog}
+      >
+        <div className="overflow-x-auto">
+          <table className="clinical-table">
+            <thead>
+              <tr>
+                <th>Nom & Prénom</th>
+                <th>Email</th>
+                <th>Rôle Sanitaire</th>
+                <th>Wilaya</th>
+                <th>Établissement</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="font-bold">Dr. Benali Mohamed</td>
+                <td>m.benali@vet.dz</td>
+                <td>Vétérinaire Inspecteur</td>
+                <td>Alger (16)</td>
+                <td>Abattoir Hussein Dey</td>
+                <td><StatusBadge variant="success">Actif</StatusBadge></td>
+              </tr>
+              <tr>
+                <td className="font-bold">Dr. Khelifi Samir</td>
+                <td>s.khelifi@vet.dz</td>
+                <td>Vétérinaire Inspecteur</td>
+                <td>Alger (16)</td>
+                <td>Abattoir El Harrach</td>
+                <td><StatusBadge variant="success">Actif</StatusBadge></td>
+              </tr>
+              <tr>
+                <td className="font-bold">Dr. Bouzid Amine</td>
+                <td>a.bouzid@inspec.dz</td>
+                <td>Inspecteur de Wilaya</td>
+                <td>Sétif (19)</td>
+                <td>Direction des Services Vétérinaires</td>
+                <td><StatusBadge variant="success">Actif</StatusBadge></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-
-        <div className="glass-card p-5 rounded-2xl">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">مفتشيات الولايات</span>
-            <ShieldCheck className="w-5 h-5 text-emerald-600" />
-          </div>
-          <p className="text-2xl font-bold text-emerald-600 mt-2">58</p>
-        </div>
-
-        <div className="glass-card p-5 rounded-2xl">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">حالة الربط مع Supabase</span>
-            <Database className="w-5 h-5 text-teal-600" />
-          </div>
-          <p className="text-sm font-bold text-teal-700 mt-2">مهيأ / Initialisé</p>
-        </div>
-      </div>
+      </ClinicalCard>
     </div>
   );
 }
