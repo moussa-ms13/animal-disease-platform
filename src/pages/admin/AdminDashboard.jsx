@@ -1,103 +1,71 @@
-﻿import React from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserCog, Users, ShieldCheck, Database, KeyRound, UserPlus } from 'lucide-react';
+import { UserCog, User, Shield, KeyRound, CheckCircle2 } from 'lucide-react';
 import PageHeader from '../../components/ui/PageHeader';
-import MetricTile from '../../components/ui/MetricTile';
 import ClinicalCard from '../../components/ui/ClinicalCard';
 import StatusBadge from '../../components/ui/StatusBadge';
-import ClinicalButton from '../../components/ui/ClinicalButton';
+import MetricTile from '../../components/ui/MetricTile';
+import { getCurrentUser } from '../../services/dbService';
 
 export default function AdminDashboard() {
   const { t, i18n } = useTranslation();
   const isRtl = i18n.language === 'ar';
+  const user = getCurrentUser();
 
   return (
     <div className="space-y-4">
       <PageHeader
         category={t('roles.admin')}
-        badge="Administration Centrale"
+        badge="Administration Système"
         badgeVariant="neutral"
         title={t('nav.admin')}
         subtitle={
           isRtl
-            ? 'إدارة حسابات المستخدمين، تعيين المفتشين بالمذابح الولائية، مراقبة اتصالات قاعدة البيانات وسجل العمليات.'
-            : 'Gestion des accès, paramétrage des abattoirs communaux et supervision des connexions Supabase.'
-        }
-        actions={
-          <ClinicalButton variant="primary" size="sm" icon={UserPlus}>
-            {isRtl ? 'إضافة مستخدم جديد' : 'Nouvel utilisateur'}
-          </ClinicalButton>
+            ? "إدارة حسابات المستخدمين، تعيين الصلاحيات والأدوار، وإدارة قواميس النظام (الفصائل، الأمراض، الأعضاء)."
+            : "Gestion des utilisateurs, des attributions de rôles et des dictionnaires de référence."
         }
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <MetricTile
-          label={isRtl ? 'الأطباء البياطرة المسجلون' : 'Vétérinaires inscrits'}
-          value="1,890"
-          subtext={isRtl ? 'ممارسون ومفتشون عموميون' : 'Comptes actifs'}
-          icon={Users}
+          label={isRtl ? "مدير النظام" : "Administrateur"}
+          value={user?.fullName || "Admin Système"}
+          subtext={user?.email || "admin@sante-animale.dz"}
+          icon={User}
           variant="dhis"
         />
         <MetricTile
-          label={isRtl ? 'مفتشيات الولايات' : 'Inspections de Wilaya'}
-          value="58"
-          subtext={isRtl ? 'تغطية وطنية شاملة' : '100% connectées'}
-          icon={ShieldCheck}
+          label={isRtl ? "صلاحيات الأمان" : "Niveau de privilège"}
+          value="SYSTEM_ADMIN"
+          subtext="Contrôle total RBAC"
+          icon={Shield}
+          variant="amber"
+        />
+        <MetricTile
+          label={isRtl ? "جداول المصادقة" : "Gestion des accès"}
+          value="users & roles"
+          subtext="Tables PostgreSQL dédiées"
+          icon={KeyRound}
           variant="emerald"
-        />
-        <MetricTile
-          label={isRtl ? 'حالة قاعدة بيانات Supabase' : 'Service BaaS / Supabase'}
-          value="Opérationnel"
-          subtext="PostgreSQL & RLS actifs"
-          icon={Database}
-          variant="dhis"
         />
       </div>
 
       <ClinicalCard
-        title={isRtl ? 'إدارة المستخدمين والصلاحيات' : 'Comptes utilisateurs récents'}
-        subtitle={isRtl ? 'قائمة الحسابات النشطة في المنظومة' : 'Dernières attributions de rôles'}
+        title={isRtl ? "إدارة المستخدمين والصلاحيات وقواميس النظام" : "Gestion des Utilisateurs & Référentiels"}
+        subtitle={isRtl ? "إدارة قاعدة بيانات المستخدمين المعتمدين والمصالح البيطرية" : "Administration des comptes et paramétrage du référentiel sanitaire"}
         icon={UserCog}
+        action={<StatusBadge variant="neutral" dot>{isRtl ? "أمان النظام" : "Sécurité RBAC"}</StatusBadge>}
       >
-        <div className="overflow-x-auto">
-          <table className="clinical-table">
-            <thead>
-              <tr>
-                <th>Nom & Prénom</th>
-                <th>Email</th>
-                <th>Rôle Sanitaire</th>
-                <th>Wilaya</th>
-                <th>Établissement</th>
-                <th>Statut</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="font-bold">Dr. Benali Mohamed</td>
-                <td>m.benali@vet.dz</td>
-                <td>Vétérinaire Inspecteur</td>
-                <td>Alger (16)</td>
-                <td>Abattoir Hussein Dey</td>
-                <td><StatusBadge variant="success">Actif</StatusBadge></td>
-              </tr>
-              <tr>
-                <td className="font-bold">Dr. Khelifi Samir</td>
-                <td>s.khelifi@vet.dz</td>
-                <td>Vétérinaire Inspecteur</td>
-                <td>Alger (16)</td>
-                <td>Abattoir El Harrach</td>
-                <td><StatusBadge variant="success">Actif</StatusBadge></td>
-              </tr>
-              <tr>
-                <td className="font-bold">Dr. Bouzid Amine</td>
-                <td>a.bouzid@inspec.dz</td>
-                <td>Inspecteur de Wilaya</td>
-                <td>Sétif (19)</td>
-                <td>Direction des Services Vétérinaires</td>
-                <td><StatusBadge variant="success">Actif</StatusBadge></td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="p-4 bg-slate-50 border border-dashed border-slate-300 rounded-sm text-center py-10 space-y-2">
+          <CheckCircle2 className="w-8 h-8 text-slate-700 mx-auto" />
+          <h4 className="text-sm font-bold text-slate-800">
+            {isRtl ? "لوحة إدارة النظام مهيأة" : "Tableau de Bord Administration Initialisé"}
+          </h4>
+          <p className="text-xs text-slate-500 max-w-md mx-auto">
+            {isRtl
+              ? "تم التحقق من صلاحيات المدير الفني. جاهز لإدارة المستخدمين، تعيين البياطرة للمذابح وإدارة القواميس."
+              : "Accès sécurisé administrateur validé. Prêt pour la gestion des comptes et dictionnaires de référence."}
+          </p>
         </div>
       </ClinicalCard>
     </div>

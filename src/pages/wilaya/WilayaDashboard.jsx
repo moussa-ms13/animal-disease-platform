@@ -1,15 +1,16 @@
-﻿import React from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Building2, CheckSquare, Clock, AlertOctagon, Filter, Download } from 'lucide-react';
+import { Building2, User, ShieldCheck, Database, CheckCircle2 } from 'lucide-react';
 import PageHeader from '../../components/ui/PageHeader';
-import MetricTile from '../../components/ui/MetricTile';
 import ClinicalCard from '../../components/ui/ClinicalCard';
 import StatusBadge from '../../components/ui/StatusBadge';
-import ClinicalButton from '../../components/ui/ClinicalButton';
+import MetricTile from '../../components/ui/MetricTile';
+import { getCurrentUser } from '../../services/dbService';
 
 export default function WilayaDashboard() {
   const { t, i18n } = useTranslation();
   const isRtl = i18n.language === 'ar';
+  const user = getCurrentUser();
 
   return (
     <div className="space-y-4">
@@ -20,113 +21,51 @@ export default function WilayaDashboard() {
         title={t('nav.wilaya')}
         subtitle={
           isRtl
-            ? 'مراجعة وتدقيق محاضر الحجز الصحي المرفوعة من المذابح، المصادقة على القرارات، وتنسيق التدابير الصحية والتحقيقات الوبائية.'
-            : "Contrôle sanitaire et validation des déclarations de saisies transmises par les établissements d'abattage de la Wilaya."
-        }
-        actions={
-          <div className="flex items-center gap-2">
-            <ClinicalButton variant="secondary" size="sm" icon={Filter}>
-              {isRtl ? 'تصفية المذابح' : 'Filtrer par abattoir'}
-            </ClinicalButton>
-            <ClinicalButton variant="secondary" size="sm" icon={Download}>
-              {isRtl ? 'تصدير الكشف (Excel)' : 'Exporter (Excel)'}
-            </ClinicalButton>
-          </div>
+            ? "المراقبة الوبائية الإقليمية، مراجعة وتدقيق محاضر الحجز الصحي المرفوعة من المذابح والمصادقة الرسمية."
+            : "Supervision épidémiologique territoriale et validation des procès-verbaux de saisie d'abattoir."
         }
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <MetricTile
-          label={isRtl ? 'في انتظار المصادقة' : 'Dossiers en attente'}
-          value="7"
-          subtext={isRtl ? 'تتطلب مراجعة الطبيب المفتش' : 'À valider par l’inspecteur'}
-          icon={Clock}
+          label={isRtl ? "المفتش الولائي" : "Inspecteur connecté"}
+          value={user?.fullName || "Dr. Samia Khelifi"}
+          subtext={user?.email || "wilaya@sante-animale.dz"}
+          icon={User}
           variant="amber"
         />
         <MetricTile
-          label={isRtl ? 'محاضر تمت المصادقة عليها' : 'Dossiers validés'}
-          value="48"
-          subtext={isRtl ? 'خلال الشهر الجاري' : 'Mois en cours'}
-          icon={CheckSquare}
-          variant="emerald"
+          label={isRtl ? "الإقليم والاختصاص" : "Juridiction sanitaire"}
+          value={user?.wilayaName || "Wilaya d'Alger (16)"}
+          subtext={isRtl ? "جميع مذابح الإقليم" : "Tous abattoirs rattachés"}
+          icon={Building2}
+          variant="dhis"
         />
         <MetricTile
-          label={isRtl ? 'إنذارات وبائية (MDO)' : 'Alertes MDO prioritaires'}
-          value="1"
-          subtext={isRtl ? 'تحقيق وبائي مفتوح' : 'Suspicion sous séquestre'}
-          icon={AlertOctagon}
-          variant="red"
+          label={isRtl ? "مسار المصادقة" : "Workflow de validation"}
+          value="DRAFT -> VALIDATED"
+          subtext="Contrôle & Visa officiel"
+          icon={ShieldCheck}
+          variant="emerald"
         />
       </div>
 
       <ClinicalCard
-        title={isRtl ? 'سجل المحاضر الواردة من المذابح' : "Registre des réceptions d'abattoir"}
-        subtitle={isRtl ? 'قائمة الفحص والمصادقة الصحية' : 'File d’attente des dossiers sanitaires'}
+        title={isRtl ? "سجل استقبال ومصادقة محاضر المذابح" : "Registre de Réception & Validation des PV"}
+        subtitle={isRtl ? "مساحة المفتشية الولائية لمراقبة السلامة الغذائية" : "Espace d'arbitrage sanitaire et d'investigation épidémiologique"}
         icon={Building2}
+        action={<StatusBadge variant="warning" dot>{isRtl ? "رقابة نشطة" : "Supervision active"}</StatusBadge>}
       >
-        <div className="overflow-x-auto">
-          <table className="clinical-table">
-            <thead>
-              <tr>
-                <th>N° Réf</th>
-                <th>Abattoir</th>
-                <th>Commune</th>
-                <th>Date Réception</th>
-                <th>Vétérinaire Déclarant</th>
-                <th>Motifs Constatés</th>
-                <th>Poids Saisi</th>
-                <th>Priorité</th>
-                <th>Décision</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="font-mono font-bold text-dhis-800">W16-2026-089</td>
-                <td>Abattoir Communal Hussein Dey</td>
-                <td>Hussein Dey</td>
-                <td>18/09/2026 09:30</td>
-                <td>Dr. Benali M.</td>
-                <td>Hydatidose hépatique (1C)</td>
-                <td className="font-mono">4.5 kg</td>
-                <td>
-                  <StatusBadge variant="neutral">Ordinaire</StatusBadge>
-                </td>
-                <td>
-                  <StatusBadge variant="warning" dot>En attente</StatusBadge>
-                </td>
-              </tr>
-              <tr>
-                <td className="font-mono font-bold text-dhis-800">W16-2026-088</td>
-                <td>Abattoir d'El Harrach</td>
-                <td>El Harrach</td>
-                <td>18/09/2026 08:15</td>
-                <td>Dr. Khelifi S.</td>
-                <td>Tuberculose bovine (2C - MDO)</td>
-                <td className="font-mono">180.0 kg</td>
-                <td>
-                  <StatusBadge variant="danger" dot>URGENT MDO</StatusBadge>
-                </td>
-                <td>
-                  <StatusBadge variant="danger">Enquête requise</StatusBadge>
-                </td>
-              </tr>
-              <tr>
-                <td className="font-mono font-bold text-dhis-800">W16-2026-087</td>
-                <td>Tuerie Municipale Rouiba</td>
-                <td>Rouiba</td>
-                <td>17/09/2026 14:00</td>
-                <td>Dr. Mansouri F.</td>
-                <td>Fasciolose hépatique (1C)</td>
-                <td className="font-mono">8.2 kg</td>
-                <td>
-                  <StatusBadge variant="neutral">Ordinaire</StatusBadge>
-                </td>
-                <td>
-                  <StatusBadge variant="success">Validé</StatusBadge>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="p-4 bg-slate-50 border border-dashed border-slate-300 rounded-sm text-center py-10 space-y-2">
+          <CheckCircle2 className="w-8 h-8 text-amber-600 mx-auto" />
+          <h4 className="text-sm font-bold text-slate-800">
+            {isRtl ? "لوحة التفتيش الولائي مهيأة" : "Tableau de Bord Wilaya Initialisé"}
+          </h4>
+          <p className="text-xs text-slate-500 max-w-md mx-auto">
+            {isRtl
+              ? "تم عزل الصلاحيات حسب الولاية بنجاح. جاهز لعرض جدول المحاضر الواردة وإجراءات المصادقة أو الإرجاع للتصحيح."
+              : "Accès sécurisé réservé à l'inspection de Wilaya. Prêt pour la réception des flux d'abattoirs."}
+          </p>
         </div>
       </ClinicalCard>
     </div>

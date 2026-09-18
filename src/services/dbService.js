@@ -124,7 +124,7 @@ export async function loginUser(email, password) {
     }
 
     if (!data.is_active) {
-      return { user: null, error: 'Compte utilisateur désactivé par l'administration' };
+      return { user: null, error: "Compte utilisateur désactivé par l'administration" };
     }
 
     _currentUser = {
@@ -262,7 +262,7 @@ export async function fetchSlaughterhouses(wilayaId) {
     console.warn('[dbService.fetchSlaughterhouses] Fallback slaughterhouses used:', err.message);
     return [
       { id: 'ab-1', name_fr: 'Abattoir Communal de Hussein Dey', name_ar: 'المذبح البلدي بحسين داي', facility_type: 'ABATTOIR_COMMUNAL' },
-      { id: 'ab-2', name_fr: 'Abattoir Municipal d'El Harrach', name_ar: 'المذبح البلدي بالحراش', facility_type: 'ABATTOIR_COMMUNAL' },
+      { id: 'ab-2', name_fr: "Abattoir Municipal d'El Harrach", name_ar: 'المذبح البلدي بالحراش', facility_type: 'ABATTOIR_COMMUNAL' },
       { id: 'ab-3', name_fr: 'Tuerie Municipale de Rouiba', name_ar: 'مذبح بلدية الرويبة', facility_type: 'TUERIE' },
     ];
   }
@@ -353,7 +353,7 @@ export async function fetchReports(filters = {}) {
           inspection_date: '2026-09-18',
           status: 'SUBMITTED_TO_WILAYA',
           is_urgent_mdo: true,
-          slaughterhouse_name: 'Abattoir d'El Harrach',
+          slaughterhouse_name: "Abattoir d'El Harrach",
           commune_name: 'El Harrach',
           inspector_name: 'Dr. Khelifi S.',
           findings_count: 1,
@@ -423,7 +423,7 @@ export async function createInspectionReport(reportData, seizureItems = []) {
     return { report, error: null };
   } catch (err) {
     console.error('[dbService.createInspectionReport] Error:', err);
-    return { report: null, error: err.message || 'Erreur d'enregistrement du rapport' };
+    return { report: null, error: err.message || "Erreur d'enregistrement du rapport" };
   }
 }
 
