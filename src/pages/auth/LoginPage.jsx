@@ -117,18 +117,18 @@ export default function LoginPage() {
         {/* =========================================================================
             LEFT PANEL: Institutional Identity & Local Image Overlay
            ========================================================================= */}
-        <div className="w-full md:w-1/2 bg-[#1a2b3c] text-white p-6 sm:p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden hidden md:flex border-r border-slate-700/50">
+        <div className="w-full md:w-1/2 bg-[#1a2b3c] text-white p-6 sm:p-8 lg:p-12 flex flex-col justify-center relative overflow-hidden hidden md:flex border-r border-slate-700/50">
           {/* Subtle local clinical background image */}
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-20 mix-blend-multiply pointer-events-none"
+            className="absolute inset-0 bg-cover bg-center opacity-25 mix-blend-multiply pointer-events-none"
             style={{ backgroundImage: "url('/images.jpg')" }}
           />
 
-          {/* Top Institutional Header */}
-          <div className="relative z-10">
+          {/* Institutional Header & Platform Identity */}
+          <div className="relative z-10 space-y-4">
             {/* Header Identity Badge */}
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-9 h-9 rounded-sm border border-slate-600 bg-[#0f1d2c] flex items-center justify-center text-slate-200 shrink-0 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-sm border border-slate-600 bg-[#0f1d2c] flex items-center justify-center text-slate-200 shrink-0 shadow-sm">
                 <Shield className="w-5 h-5 text-slate-300" />
               </div>
               <div className="leading-tight">
@@ -142,33 +142,13 @@ export default function LoginPage() {
             </div>
 
             {/* Platform Title */}
-            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-white mb-1.5 leading-tight">
-              Plateforme Nationale de Surveillance
-            </h1>
-            <h2 className="text-xs uppercase tracking-wider text-slate-300 font-mono font-medium">
-              Système de Suivi Sanitaire & Épidémiologique des Abattoirs
-            </h2>
-
-
-          </div>
-
-          {/* Bottom Dense Status Block (Rigid Clinical Data Box) */}
-          <div className="relative z-10 mt-6 pt-3 border-t border-slate-700/80 font-mono text-[11px] text-slate-300 space-y-1.5 bg-[#0f1d2c]/90 p-3 rounded-sm border border-slate-700">
-            <div className="flex items-center justify-between text-slate-400 border-b border-slate-700/60 pb-1 mb-1 font-semibold uppercase text-[10px] tracking-wider">
-              <span>Protocole Sanitaire</span>
-              <span className="text-emerald-400">NORMES DHIS2 / OIE</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-slate-400 font-bold shrink-0">[SYS-01]</span>
-              <span className="truncate">Inspection Ante & Post-Mortem Standardisée</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-slate-400 font-bold shrink-0">[SYS-02]</span>
-              <span className="truncate">Veille Sanitaire & Déclaration MDO Immédiate</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-slate-400 font-bold shrink-0">[SYS-03]</span>
-              <span className="truncate">Traçabilité Complète & Visa de Wilaya Sécurisé</span>
+            <div>
+              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-white mb-2 leading-tight">
+                Plateforme Nationale de Surveillance
+              </h1>
+              <h2 className="text-xs uppercase tracking-wider text-slate-300 font-mono font-medium leading-relaxed">
+                Système de Suivi Sanitaire & Épidémiologique des Abattoirs
+              </h2>
             </div>
           </div>
         </div>
