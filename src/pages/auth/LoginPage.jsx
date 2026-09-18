@@ -7,12 +7,9 @@ import {
   Eye,
   EyeOff,
   ShieldCheck,
-  Stethoscope,
-  FileCheck2,
-  HeartPulse,
+  Shield,
   Loader2,
   AlertCircle,
-  Sun,
   Globe2,
   ChevronDown
 } from 'lucide-react';
@@ -30,7 +27,7 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(true);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
 
-  // Auto-redirect if already logged in
+  // Auto-redirect if already authenticated
   useEffect(() => {
     const activeUser = getCurrentUser();
     if (activeUser?.role) {
@@ -67,8 +64,8 @@ export default function LoginPage() {
     if (!email.trim()) {
       setError(
         i18n.language === 'ar'
-          ? 'يرجى إدخال البريد الإلكتروني المؤسساتي'
-          : 'Veuillez saisir votre adresse e-mail institutionnelle.'
+          ? "يرجى إدخال البريد الإلكتروني المؤسساتي"
+          : "Veuillez saisir votre adresse e-mail institutionnelle."
       );
       return;
     }
@@ -82,21 +79,20 @@ export default function LoginPage() {
         setError(
           loginErr ||
             (i18n.language === 'ar'
-              ? 'فشل تسجيل الدخول. يرجى التحقق من صحة البيانات المدخلة.'
-              : 'Identifiants invalides ou compte non autorisé.')
+              ? "فشل تسجيل الدخول. يرجى التحقق من صحة البيانات المدخلة."
+              : "Identifiants invalides ou compte non autorisé.")
         );
         setLoading(false);
         return;
       }
 
-      // Successful login -> Redirect based on institutional role
       redirectUser(user.role);
     } catch (err) {
-      console.error('[LoginPage] Submit error:', err);
+      console.error('[LoginPage] Error:', err);
       setError(
         i18n.language === 'ar'
-          ? 'حدث خطأ في الاتصال بالخادم. يرجى المحاولة لاحقاً.'
-          : 'Erreur de connexion au serveur. Veuillez réessayer.'
+          ? "حدث خطأ في الاتصال بالخادم. يرجى المحاولة لاحقاً."
+          : "Erreur de connexion au serveur. Veuillez réessayer."
       );
       setLoading(false);
     }
@@ -114,112 +110,97 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-100/90 flex items-center justify-center p-3 sm:p-6 lg:p-8 font-sans">
-      {/* Main Split-Screen Card */}
-      <div className="max-w-5xl w-full bg-white flex flex-col md:flex-row rounded-2xl shadow-2xl overflow-hidden border border-slate-200/70 min-h-[580px] lg:min-h-[620px]">
+    <div className="min-h-screen w-full bg-slate-100 flex items-center justify-center p-3 sm:p-6 lg:p-8 font-sans">
+      {/* Main Utilitarian Clinical Card */}
+      <div className="max-w-5xl w-full bg-white flex flex-col md:flex-row rounded-sm shadow-md border border-slate-300 overflow-hidden min-h-[560px] lg:min-h-[590px]">
         
         {/* =========================================================================
-            LEFT PANEL: Institutional Branding & Visual Identity (50% on desktop)
+            LEFT PANEL: Institutional Identity & Local Image Overlay
            ========================================================================= */}
-        <div className="w-full md:w-1/2 bg-[#0c2340] text-white p-6 sm:p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden hidden md:flex">
-          {/* Background image overlay */}
+        <div className="w-full md:w-1/2 bg-[#1a2b3c] text-white p-6 sm:p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden hidden md:flex border-r border-slate-700/50">
+          {/* Subtle local clinical background image */}
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-25 mix-blend-luminosity"
-            style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80')",
-            }}
+            className="absolute inset-0 bg-cover bg-center opacity-20 mix-blend-multiply pointer-events-none"
+            style={{ backgroundImage: "url('/images.jpg')" }}
           />
-          {/* Gradient overlay for contrast */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0c2340]/90 via-[#0c2340]/80 to-[#07172b]/98" />
 
-          {/* Top Brand Block */}
+          {/* Top Institutional Header */}
           <div className="relative z-10">
-            {/* Logo Emblem (styled similarly to mockup's hand-drawn box with sun/shield) */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl border-2 border-amber-400/80 bg-amber-400/10 flex items-center justify-center shadow-inner relative group">
-                <Sun className="w-6 h-6 text-amber-400" />
+            {/* Header Identity Badge */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-9 h-9 rounded-sm border border-slate-600 bg-[#0f1d2c] flex items-center justify-center text-slate-200 shrink-0 shadow-sm">
+                <Shield className="w-5 h-5 text-slate-300" />
               </div>
               <div className="leading-tight">
-                <span className="block text-xs uppercase tracking-widest font-extrabold text-amber-400">
+                <span className="block text-[11px] uppercase tracking-widest font-bold text-slate-300">
                   RÉPUBLIQUE ALGÉRIENNE
                 </span>
-                <span className="block text-[11px] text-slate-300 font-medium tracking-wide">
-                  MINISTÈRE DE L'AGRICULTURE (DSV)
+                <span className="block text-[10px] text-slate-400 font-mono tracking-wider">
+                  MINISTÈRE DE L'AGRICULTURE — DSV
                 </span>
               </div>
             </div>
 
             {/* Platform Title */}
-            <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-white mb-2 leading-tight">
-              Plateforme <span className="text-blue-400">Nationale</span>
+            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-white mb-1.5 leading-tight">
+              Plateforme Nationale de Surveillance
             </h1>
-            <h2 className="text-base lg:text-lg font-semibold text-slate-200 leading-snug">
-              Surveillance Épidémiologique des Abattoirs
+            <h2 className="text-xs uppercase tracking-wider text-slate-300 font-mono font-medium">
+              Système de Suivi Sanitaire & Épidémiologique des Abattoirs
             </h2>
-            <p className="text-xs text-slate-300 mt-2 max-w-sm leading-relaxed">
-              Système numérique unifié d'alerte précoce, de déclaration des saisies vétérinaires et de veille sanitaire.
-            </p>
 
-            {/* Thematic Quote */}
-            <div className="mt-8 pl-4 border-l-2 border-amber-400/80 text-xs italic text-slate-200 max-w-sm">
-              <span className="text-amber-400 font-serif text-lg leading-none">“</span> La vigilance sanitaire aujourd'hui, la sécurité alimentaire demain. <span className="text-amber-400 font-serif text-lg leading-none">”</span>
+            {/* Utilitarian Policy Note */}
+            <div className="mt-5 p-3 bg-[#0f1d2c]/80 border-l-2 border-slate-400 text-xs text-slate-300 font-mono leading-relaxed rounded-sm">
+              Réseau national d'épidémio-surveillance des abattoirs (MADR/DSV). Centralisation des saisies et notification obligatoire des zoonoses.
             </div>
           </div>
 
-          {/* Bottom Features Box (Matching the 3 columns in mockup) */}
-          <div className="relative z-10 mt-8 pt-4 border-t border-white/10 bg-white/5 backdrop-blur-xs rounded-xl p-3 grid grid-cols-3 gap-2 text-center text-slate-200">
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-400/30 flex items-center justify-center mb-1.5 text-blue-300">
-                <Stethoscope className="w-4 h-4" />
-              </div>
-              <span className="text-[11px] font-bold text-white block">Inspection</span>
-              <span className="text-[9px] text-slate-400 leading-tight">Post-mortem rigoureuse</span>
+          {/* Bottom Dense Status Block (Rigid Clinical Data Box) */}
+          <div className="relative z-10 mt-6 pt-3 border-t border-slate-700/80 font-mono text-[11px] text-slate-300 space-y-1.5 bg-[#0f1d2c]/90 p-3 rounded-sm border border-slate-700">
+            <div className="flex items-center justify-between text-slate-400 border-b border-slate-700/60 pb-1 mb-1 font-semibold uppercase text-[10px] tracking-wider">
+              <span>Protocole Sanitaire</span>
+              <span className="text-emerald-400">NORMES DHIS2 / OIE</span>
             </div>
-
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-400/30 flex items-center justify-center mb-1.5 text-amber-300">
-                <FileCheck2 className="w-4 h-4" />
-              </div>
-              <span className="text-[11px] font-bold text-white block">Traçabilité</span>
-              <span className="text-[9px] text-slate-400 leading-tight">Motifs de saisies & MDO</span>
+            <div className="flex items-start gap-2">
+              <span className="text-slate-400 font-bold shrink-0">[SYS-01]</span>
+              <span className="truncate">Inspection Ante & Post-Mortem Standardisée</span>
             </div>
-
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center mb-1.5 text-emerald-300">
-                <HeartPulse className="w-4 h-4" />
-              </div>
-              <span className="text-[11px] font-bold text-white block">Santé Publique</span>
-              <span className="text-[9px] text-slate-400 leading-tight">Sécurité alimentaire</span>
+            <div className="flex items-start gap-2">
+              <span className="text-slate-400 font-bold shrink-0">[SYS-02]</span>
+              <span className="truncate">Veille Sanitaire & Déclaration MDO Immédiate</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-slate-400 font-bold shrink-0">[SYS-03]</span>
+              <span className="truncate">Traçabilité Complète & Visa de Wilaya Sécurisé</span>
             </div>
           </div>
         </div>
 
         {/* =========================================================================
-            RIGHT PANEL: Authentication Form (50% on desktop, 100% on mobile)
+            RIGHT PANEL: Clinical Utilitarian Form
            ========================================================================= */}
         <div className="w-full md:w-1/2 p-6 sm:p-8 lg:p-10 flex flex-col justify-between bg-white relative">
-          {/* Top Row: Language Picker */}
+          {/* Top Row: Strict Language Selector */}
           <div className="flex justify-end mb-2 relative">
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setLangMenuOpen(!langMenuOpen)}
-                className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
+                className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-300 px-2.5 py-1 rounded-sm cursor-pointer transition-colors"
               >
-                <Globe2 className="w-3.5 h-3.5 text-slate-400" />
+                <Globe2 className="w-3.5 h-3.5 text-slate-500" />
                 <span>{i18n.language === 'ar' ? 'العربية' : 'FR Français'}</span>
                 <ChevronDown className="w-3 h-3 text-slate-400" />
               </button>
 
               {langMenuOpen && (
-                <div className="absolute end-0 mt-1 w-32 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-20 text-xs">
+                <div className="absolute end-0 mt-1 w-32 bg-white border border-slate-300 rounded-sm shadow-md py-1 z-20 text-xs">
                   <button
                     type="button"
                     onClick={() => switchLanguage('fr')}
                     className={
                       i18n.language === 'fr'
-                        ? 'w-full text-start px-3 py-1.5 hover:bg-slate-50 text-blue-600 font-bold'
+                        ? 'w-full text-start px-3 py-1.5 hover:bg-slate-50 text-blue-800 font-bold'
                         : 'w-full text-start px-3 py-1.5 hover:bg-slate-50 text-slate-700'
                     }
                   >
@@ -230,7 +211,7 @@ export default function LoginPage() {
                     onClick={() => switchLanguage('ar')}
                     className={
                       i18n.language === 'ar'
-                        ? 'w-full text-start px-3 py-1.5 hover:bg-slate-50 text-blue-600 font-bold'
+                        ? 'w-full text-start px-3 py-1.5 hover:bg-slate-50 text-blue-800 font-bold'
                         : 'w-full text-start px-3 py-1.5 hover:bg-slate-50 text-slate-700'
                     }
                   >
@@ -244,83 +225,83 @@ export default function LoginPage() {
           {/* Form Content */}
           <div className="my-auto">
             {/* Header */}
-            <div className="mb-6">
-              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                {i18n.language === 'ar' ? 'مرحباً بك !' : 'Bienvenue !'}
+            <div className="mb-5">
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                {i18n.language === 'ar' ? 'تسجيل الدخول' : 'Connexion Sécurisée'}
               </h3>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 mt-0.5">
                 {i18n.language === 'ar'
-                  ? 'سجّل الدخول إلى فضاء المراقبة الوبائية الآمن'
-                  : 'Connectez-vous à votre espace sécurisé'}
+                  ? 'يرجى إدخال بيانات الاعتماد المهنية للولوج إلى البوابة'
+                  : 'Veuillez renseigner vos identifiants pour accéder au portail'}
               </p>
             </div>
 
             {/* Error Message Alert */}
             {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-start gap-2.5 animate-in fade-in duration-200">
-                <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+              <div className="mb-4 p-2.5 bg-red-50 border border-red-300 rounded-sm text-xs text-red-800 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-red-700 shrink-0 mt-0.5" />
                 <span className="leading-snug">{error}</span>
               </div>
             )}
 
-            {/* Login Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-3.5">
               {/* Email Input */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  {i18n.language === 'ar' ? 'البريد الإلكتروني' : 'Adresse e-mail'}
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase tracking-wider">
+                  {i18n.language === 'ar' ? 'البريد الإلكتروني المهني' : 'Identifiant / E-mail Institutionnel'}
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute start-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <Mail className="w-4 h-4 text-slate-400 absolute start-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="email"
                     required
                     disabled={loading}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder={i18n.language === 'ar' ? 'exemple@sante-animale.dz' : 'exemple@sante-animale.dz'}
-                    className="w-full ps-10 pe-4 py-2.5 sm:py-3 text-xs sm:text-sm rounded-xl border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-slate-400 bg-white"
+                    placeholder="utilisateur@sante-animale.dz"
+                    className="w-full ps-8 pe-3 py-2 text-xs rounded-sm border border-slate-300 focus:border-blue-700 focus:ring-0 focus:outline-none bg-white transition-colors placeholder:text-slate-400 font-mono"
                   />
                 </div>
               </div>
 
               {/* Password Input */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase tracking-wider">
                   {i18n.language === 'ar' ? 'كلمة المرور' : 'Mot de passe'}
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute start-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <Lock className="w-4 h-4 text-slate-400 absolute start-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
                     disabled={loading}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder={i18n.language === 'ar' ? '••••••••••••' : 'Votre mot de passe'}
-                    className="w-full ps-10 pe-10 py-2.5 sm:py-3 text-xs sm:text-sm rounded-xl border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-slate-400 bg-white"
+                    placeholder="••••••••••••"
+                    className="w-full ps-8 pe-8 py-2 text-xs rounded-sm border border-slate-300 focus:border-blue-700 focus:ring-0 focus:outline-none bg-white transition-colors placeholder:text-slate-400 font-mono"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute end-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none p-1"
+                    className="absolute end-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none p-1 cursor-pointer"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                   </button>
                 </div>
               </div>
 
               {/* Options Row */}
-              <div className="flex items-center justify-between text-xs sm:text-sm pt-1">
-                <label className="flex items-center gap-2 text-slate-600 cursor-pointer select-none">
+              <div className="flex items-center justify-between text-xs pt-0.5">
+                <label className="flex items-center gap-1.5 text-slate-600 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer"
+                    className="w-3.5 h-3.5 rounded-none text-blue-800 border-slate-300 focus:ring-0 cursor-pointer"
                   />
-                  <span>{i18n.language === 'ar' ? 'تذكرني' : 'Se souvenir de moi'}</span>
+                  <span className="text-[11px]">{i18n.language === 'ar' ? 'تذكرني' : 'Se souvenir de moi'}</span>
                 </label>
                 <a
                   href="#forgot"
@@ -332,63 +313,63 @@ export default function LoginPage() {
                         : 'Veuillez contacter votre administrateur de Wilaya pour réinitialiser votre accès.'
                     );
                   }}
-                  className="text-blue-600 hover:underline font-medium text-xs sm:text-sm"
+                  className="text-[11px] text-[#0c4a6e] hover:underline font-medium"
                 >
                   {i18n.language === 'ar' ? 'نسيت كلمة المرور ؟' : 'Mot de passe oublié ?'}
                 </a>
               </div>
 
-              {/* Solid Blue Submit Button */}
+              {/* Utilitarian Flat Solid Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#1d4ed8] hover:bg-blue-700 active:bg-blue-800 disabled:opacity-70 text-white font-semibold py-2.5 sm:py-3 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm cursor-pointer mt-2"
+                className="w-full bg-[#0c4a6e] hover:bg-[#072c41] active:bg-[#051e2c] disabled:opacity-70 text-white font-semibold py-2 px-4 rounded-sm text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer mt-2 border border-[#09354f]"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>{i18n.language === 'ar' ? 'جاري تسجيل الدخول...' : 'Connexion en cours...'}</span>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>{i18n.language === 'ar' ? 'جاري التحقق...' : 'Connexion en cours...'}</span>
                   </>
                 ) : (
                   <>
-                    <Lock className="w-4 h-4" />
+                    <Lock className="w-3.5 h-3.5" />
                     <span>{i18n.language === 'ar' ? 'تسجيل الدخول' : 'Se connecter'}</span>
                   </>
                 )}
               </button>
             </form>
 
-            {/* Quick Role Tester (Seamless Dev Switcher) */}
-            <div className="mt-5 pt-3 border-t border-slate-100 text-center">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block mb-1.5">
-                {i18n.language === 'ar' ? 'حسابات التجربة السريعة' : 'Sélection rapide pour test'}
+            {/* Quick Role Tester (Dense Utilitarian Buttons) */}
+            <div className="mt-4 pt-3 border-t border-slate-200 text-center">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block mb-1.5">
+                {i18n.language === 'ar' ? 'حسابات التجربة السريعة' : 'Comptes de test rapide (Rôles)'}
               </span>
-              <div className="flex flex-wrap items-center justify-center gap-1.5 text-[11px]">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 text-[11px]">
                 <button
                   type="button"
                   onClick={() => setDemoAccount('vet@sante-animale.dz')}
-                  className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200 text-slate-600 transition-colors"
+                  className="px-2 py-1 rounded-sm bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-medium transition-colors cursor-pointer truncate"
                 >
                   Vétérinaire
                 </button>
                 <button
                   type="button"
                   onClick={() => setDemoAccount('wilaya@sante-animale.dz')}
-                  className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-amber-50 hover:text-amber-700 border border-slate-200 text-slate-600 transition-colors"
+                  className="px-2 py-1 rounded-sm bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-medium transition-colors cursor-pointer truncate"
                 >
                   Wilaya
                 </button>
                 <button
                   type="button"
                   onClick={() => setDemoAccount('central@sante-animale.dz')}
-                  className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-red-50 hover:text-red-700 border border-slate-200 text-slate-600 transition-colors"
+                  className="px-2 py-1 rounded-sm bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-medium transition-colors cursor-pointer truncate"
                 >
                   Ministère
                 </button>
                 <button
                   type="button"
                   onClick={() => setDemoAccount('admin@sante-animale.dz')}
-                  className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 transition-colors"
+                  className="px-2 py-1 rounded-sm bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-medium transition-colors cursor-pointer truncate"
                 >
                   Admin
                 </button>
@@ -397,12 +378,12 @@ export default function LoginPage() {
           </div>
 
           {/* Bottom Security Footnote */}
-          <div className="pt-4 border-t border-slate-100 mt-4 text-center">
-            <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1.5 leading-tight">
-              <ShieldCheck className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <div className="pt-3 border-t border-slate-200 mt-3 text-center">
+            <p className="text-[11px] text-slate-500 flex items-center justify-center gap-1.5 leading-tight">
+              <ShieldCheck className="w-3.5 h-3.5 text-slate-500 shrink-0" />
               <span>
                 {i18n.language === 'ar'
-                  ? 'الدخول مقصور على الموظفين المعتمدين. بياناتكم محمية ومؤمنة.'
+                  ? 'نظام مؤمن. الدخول مقصور على الأطباء والمفتشين البيطريين المعتمدين.'
                   : 'Accès restreint au personnel autorisé. Vos données sont sécurisées.'}
               </span>
             </p>
