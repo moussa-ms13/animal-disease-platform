@@ -1,16 +1,34 @@
-# React + Vite
+# منصة الرصد الصحي الحيواني
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+منصة جزائرية لمراقبة الأمراض الحيوانية في المسالخ، تربط الطبيب البيطري الميداني بمفتشية الولاية والمركز الوطني ضمن مسار مراجعة واعتماد واضح. الواجهة الافتراضية عربية RTL وتدعم الفرنسية LTR.
 
-Currently, two official plugins are available:
+## Redesign v2 — Surveillance workspace
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+يتضمن الإصدار البصري الجديد غلاف تشغيل موحداً (Sidebar / Topbar / Breadcrumb / Language switch / notifications / role context)، ونظام مكونات قابل لإعادة الاستخدام في `src/components/surveillance/DesignSystem.jsx`. أُعيد بناء صفحات الدخول والطبيب البيطري والولاية والوزارة والإدارة بألوان سريرية حكومية، كثافة معلومات مناسبة، حالات واضحة، واستجابة للموبايل.
 
-## React Compiler
+تدعم لوحة الطبيب اختيار مسلخ من التكليف، اشتقاق الولاية تلقائياً، إدخال الحالات في صفوف، المسودات والإرسال، ووضع الحالة العاجلة. تقدم لوحة الولاية تنبيهاً عاجلاً، line-list، drawer للمراجعة، وسجل اعتماد محلياً عند عدم توفر backend. تعرض لوحة الوزارة الحالات المؤكدة من الولاية فقط، مع مرشحات زمنية، مؤشرات، اتجاه، توزيع جغرافي CSS، وبؤر الأمراض. وتقدم لوحة الإدارة مرجع المستخدمين والمسالخ والأمراض والتكليفات.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+البيانات المعروضة عند غياب backend منظمة داخل ثوابت الصفحات، بينما تبقى دوال Supabase الحالية في `src/services/dbService.js` مستخدمة للحفظ، الاستعلام، تسجيل الدخول، وتحديث حالات المراجعة. لا توجد تغييرات على schema أو migrations.
 
-## Expanding the Oxlint configuration
+## التشغيل
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```bash
+npm install
+npm run dev
+npm run build
+npm run lint
+```
+
+المسارات:
+
+- `/login` — الدخول الآمن والحسابات التجريبية.
+- `/veterinarian` — مساحة الطبيب البيطري.
+- `/wilaya` — مركز مراجعة الولاية.
+- `/ministry` — الرصد الوطني للحالات المؤكدة فقط.
+- `/admin` — إدارة المستخدمين والبيانات المرجعية.
+
+حسابات الاختبار المتاحة من شاشة الدخول: `vet@sante-animale.dz`، `wilaya@sante-animale.dz`، و`central@sante-animale.dz`.
+
+## Stack
+
+React 19 + Vite + Tailwind CSS + React Router + i18next + Supabase client + lucide-react.

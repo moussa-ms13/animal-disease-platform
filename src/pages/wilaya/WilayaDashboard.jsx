@@ -1,73 +1,17 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
+import { AlertTriangle, CheckCircle2, ClipboardCheck, Eye, FileClock, RotateCcw, XCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Building2, User, ShieldCheck, Database, CheckCircle2 } from 'lucide-react';
-import PageHeader from '../../components/ui/PageHeader';
-import ClinicalCard from '../../components/ui/ClinicalCard';
-import StatusBadge from '../../components/ui/StatusBadge';
-import MetricTile from '../../components/ui/MetricTile';
-import { getCurrentUser } from '../../services/dbService';
+import { AppShell, Button, DataTable, Field, FilterBar, KpiCard, PageHeader, SectionCard, StatusBadge } from '../../components/surveillance/DesignSystem';
+import { getCurrentUser, updateReportStatus } from '../../services/dbService';
+
+const initialCases = [{ id:'rep-101', reference_no:'PV-16-2409-021', inspection_date:'2026-09-23', slaughterhouse_name:'مذبح بئر مراد رايس', inspector_name:'د. محمد بن علي', disease:'الحمى القلاعية', status:'SUBMITTED_TO_WILAYA', is_urgent_mdo:true, notes:'اشتباه سريري معزّز بارتفاع الحرارة وآفات فموية.' }, { id:'rep-102', reference_no:'PV-16-2409-019', inspection_date:'2026-09-23', slaughterhouse_name:'مذبح حسين داي', inspector_name:'د. ليلى مراد', disease:'داء المشوكات', status:'SUBMITTED_TO_WILAYA', is_urgent_mdo:false, notes:'حجز جزئي للكبد.' }, { id:'rep-103', reference_no:'PV-16-2409-016', inspection_date:'2026-09-22', slaughterhouse_name:'مذبح الرويبة', inspector_name:'د. أمين سعدي', disease:'السل البقري', status:'VALIDATED', is_urgent_mdo:false, notes:'تمت مراجعة الوثائق والصور.' }, { id:'rep-104', reference_no:'PV-16-2409-011', inspection_date:'2026-09-22', slaughterhouse_name:'مذبح الدار البيضاء', inspector_name:'د. نادية قاسمي', disease:'داء الكيسات المذنبة', status:'RETURNED_FOR_CORRECTION', is_urgent_mdo:false, notes:'يرجى استكمال وزن الحجز.' }];
+const viewStatus = (status) => status === 'VALIDATED' ? 'confirmed' : status === 'RETURNED_FOR_CORRECTION' ? 'returned' : 'pending';
 
 export default function WilayaDashboard() {
-  const { t, i18n } = useTranslation();
-  const isRtl = i18n.language === 'ar';
-  const user = getCurrentUser();
-
-  return (
-    <div className="space-y-4">
-      <PageHeader
-        category={t('roles.wilaya')}
-        badge="Inspection Vétérinaire de Wilaya"
-        badgeVariant="warning"
-        title={t('nav.wilaya')}
-        subtitle={
-          isRtl
-            ? "المراقبة الوبائية الإقليمية، مراجعة وتدقيق محاضر الحجز الصحي المرفوعة من المذابح والمصادقة الرسمية."
-            : "Supervision épidémiologique territoriale et validation des procès-verbaux de saisie d'abattoir."
-        }
-      />
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <MetricTile
-          label={isRtl ? "المفتش الولائي" : "Inspecteur connecté"}
-          value={user?.fullName || "Dr. Samia Khelifi"}
-          subtext={user?.email || "wilaya@sante-animale.dz"}
-          icon={User}
-          variant="amber"
-        />
-        <MetricTile
-          label={isRtl ? "الإقليم والاختصاص" : "Juridiction sanitaire"}
-          value={user?.wilayaName || "Wilaya d'Alger (16)"}
-          subtext={isRtl ? "جميع مذابح الإقليم" : "Tous abattoirs rattachés"}
-          icon={Building2}
-          variant="dhis"
-        />
-        <MetricTile
-          label={isRtl ? "مسار المصادقة" : "Workflow de validation"}
-          value="DRAFT -> VALIDATED"
-          subtext="Contrôle & Visa officiel"
-          icon={ShieldCheck}
-          variant="emerald"
-        />
-      </div>
-
-      <ClinicalCard
-        title={isRtl ? "سجل استقبال ومصادقة محاضر المذابح" : "Registre de Réception & Validation des PV"}
-        subtitle={isRtl ? "مساحة المفتشية الولائية لمراقبة السلامة الغذائية" : "Espace d'arbitrage sanitaire et d'investigation épidémiologique"}
-        icon={Building2}
-        action={<StatusBadge variant="warning" dot>{isRtl ? "رقابة نشطة" : "Supervision active"}</StatusBadge>}
-      >
-        <div className="p-4 bg-slate-50 border border-dashed border-slate-300 rounded-sm text-center py-10 space-y-2">
-          <CheckCircle2 className="w-8 h-8 text-amber-600 mx-auto" />
-          <h4 className="text-sm font-bold text-slate-800">
-            {isRtl ? "لوحة التفتيش الولائي مهيأة" : "Tableau de Bord Wilaya Initialisé"}
-          </h4>
-          <p className="text-xs text-slate-500 max-w-md mx-auto">
-            {isRtl
-              ? "تم عزل الصلاحيات حسب الولاية بنجاح. جاهز لعرض جدول المحاضر الواردة وإجراءات المصادقة أو الإرجاع للتصحيح."
-              : "Accès sécurisé réservé à l'inspection de Wilaya. Prêt pour la réception des flux d'abattoirs."}
-          </p>
-        </div>
-      </ClinicalCard>
-    </div>
-  );
+  const { t } = useTranslation(); const user = getCurrentUser(); const [cases, setCases] = useState(initialCases); const [filter, setFilter] = useState('ALL'); const [selected, setSelected] = useState(null); const [toast, setToast] = useState('');
+  const urgent = cases.filter((item) => item.is_urgent_mdo && item.status !== 'VALIDATED'); const pending = cases.filter((item) => item.status === 'SUBMITTED_TO_WILAYA'); const confirmed = cases.filter((item) => item.status === 'VALIDATED');
+  const visible = useMemo(() => filter === 'ALL' ? cases : cases.filter((item) => viewStatus(item.status) === filter), [cases, filter]);
+  const changeStatus = async (status) => { if (!selected) return; await updateReportStatus(selected.id, status, '', user?.id); setCases((current) => current.map((item) => item.id === selected.id ? { ...item, status } : item)); setToast(status === 'VALIDATED' ? t('wilayaPage.confirmedSuccess') : status === 'RETURNED_FOR_CORRECTION' ? t('wilayaPage.returnedSuccess') : t('wilayaPage.rejectedSuccess')); setSelected(null); };
+  const columns = [{ key:'reference_no', label:'المرجع', render:(row)=><strong>{row.reference_no}</strong> }, { key:'inspection_date', label:t('common.date') }, { key:'slaughterhouse_name', label:t('common.slaughterhouse') }, { key:'inspector_name', label:t('common.doctor') }, { key:'disease', label:t('common.disease') }, { key:'status', label:t('common.status'), render:(row)=><StatusBadge status={viewStatus(row.status)}>{row.is_urgent_mdo && row.status !== 'VALIDATED' ? t('status.urgent') : t(`status.${viewStatus(row.status)}`)}</StatusBadge> }, { key:'action', label:'', render:(row)=><button className="table-action" onClick={()=>setSelected(row)}><Eye size={15}/>{t('wilayaPage.review')}</button> }];
+  return <AppShell><PageHeader eyebrow={t('wilayaPage.eyebrow')} title={t('wilayaPage.title')} description={t('wilayaPage.description')} />{toast && <div className="urgent-strip"><strong>{toast}</strong><button className="text-button" onClick={()=>setToast('')}>×</button></div>}<div className="kpi-grid"><KpiCard label={t('wilayaPage.received')} value={cases.length} detail={t('common.today')} icon={ClipboardCheck} tone="navy" /><KpiCard label={t('wilayaPage.pending')} value={pending.length} detail={t('status.pending')} icon={FileClock} tone="amber" /><KpiCard label={t('wilayaPage.confirmed')} value={confirmed.length} detail={t('ministryPage.verified')} icon={CheckCircle2} tone="teal" /><KpiCard label={t('wilayaPage.urgent')} value={urgent.length} detail={t('status.urgent')} icon={AlertTriangle} tone="red" /></div><div className="grid-two"><div className="stack"><div className="alert-panel"><h3>{t('wilayaPage.urgentTitle')}</h3><p>{t('wilayaPage.urgentDesc')}</p>{urgent.length > 0 ? <div className="urgent-case"><div><strong>{urgent[0].reference_no}</strong><span>{urgent[0].slaughterhouse_name} · {urgent[0].disease}</span></div><Button variant="danger" onClick={()=>setSelected(urgent[0])}>{t('wilayaPage.openCase')}</Button></div> : <p>{t('common.noData')}</p>}</div><SectionCard title={t('wilayaPage.lineList')} description={t('wilayaPage.lineListDesc')} icon={ClipboardCheck}><FilterBar onReset={()=>setFilter('ALL')}><Field label={t('wilayaPage.filterStatus')}><select value={filter} onChange={(e)=>setFilter(e.target.value)}><option value="ALL">{t('wilayaPage.allStatuses')}</option><option value="pending">{t('status.pending')}</option><option value="confirmed">{t('status.confirmed')}</option><option value="returned">{t('status.returned')}</option></select></Field></FilterBar><DataTable columns={columns} rows={visible} empty={null}/></SectionCard></div><SectionCard title={t('wilayaPage.history')} description={t('common.updated')} icon={FileClock}><div className="timeline"><div className="timeline-item"><div className="timeline-dot"></div><div><strong>{t('status.urgent')} · PV-16-2409-021</strong><span>{t('common.today')} · 09:42</span></div></div><div className="timeline-item"><div className="timeline-dot"></div><div><strong>{t('status.confirmed')} · PV-16-2409-016</strong><span>{t('common.yesterday')} · 16:20</span></div></div><div className="timeline-item"><div className="timeline-dot"></div><div><strong>{t('status.returned')} · PV-16-2409-011</strong><span>{t('common.yesterday')} · 11:05</span></div></div></div></SectionCard></div>{selected && <div className="drawer-backdrop" onClick={()=>setSelected(null)}><div className="review-drawer" onClick={(e)=>e.stopPropagation()}><div className="drawer-head"><div><p className="eyebrow">{t('wilayaPage.reviewTitle')}</p><h2>{selected.reference_no}</h2></div><button className="logout-button" onClick={()=>setSelected(null)}>×</button></div><div className="drawer-body"><div className="detail-grid"><div className="detail-item"><span>{t('common.slaughterhouse')}</span><strong>{selected.slaughterhouse_name}</strong></div><div className="detail-item"><span>{t('common.doctor')}</span><strong>{selected.inspector_name}</strong></div><div className="detail-item"><span>{t('common.disease')}</span><strong>{selected.disease}</strong></div><div className="detail-item"><span>{t('common.status')}</span><StatusBadge status={viewStatus(selected.status)}>{selected.is_urgent_mdo ? t('status.urgent') : t(`status.${viewStatus(selected.status)}`)}</StatusBadge></div></div><div className="info-panel"><h3>{t('vet.clinicalNotes')}</h3><p>{selected.notes}</p></div><p className="drawer-help">{t('wilayaPage.confirmHelp')}</p><div className="drawer-actions"><Button icon={CheckCircle2} onClick={()=>changeStatus('VALIDATED')}>{t('actions.confirm')}</Button><Button variant="secondary" icon={RotateCcw} onClick={()=>changeStatus('RETURNED_FOR_CORRECTION')}>{t('actions.return')}</Button><Button variant="danger" icon={XCircle} onClick={()=>changeStatus('REJECTED')}>{t('actions.reject')}</Button></div></div></div></div>}</AppShell>;
 }

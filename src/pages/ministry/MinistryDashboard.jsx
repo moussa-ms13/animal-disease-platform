@@ -1,73 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Activity, CheckCircle2, ClipboardList, Globe2, Map, ShieldCheck, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Landmark, User, Activity, Globe, CheckCircle2 } from 'lucide-react';
-import PageHeader from '../../components/ui/PageHeader';
-import ClinicalCard from '../../components/ui/ClinicalCard';
-import StatusBadge from '../../components/ui/StatusBadge';
-import MetricTile from '../../components/ui/MetricTile';
-import { getCurrentUser } from '../../services/dbService';
+import { AppShell, DataTable, Field, FilterBar, KpiCard, PageHeader, SectionCard, StatusBadge } from '../../components/surveillance/DesignSystem';
+
+const confirmedCases = [{ id:'c-1', reference:'PV-16-2409-016', date:'23/09/2026', wilaya:'الجزائر', slaughterhouse:'مذبح الرويبة', disease:'السل البقري', doctor:'د. أمين سعدي', status:'confirmed' }, { id:'c-2', reference:'PV-16-2409-013', date:'23/09/2026', wilaya:'البليدة', slaughterhouse:'مذبح بوفاريك', disease:'داء المشوكات', doctor:'د. نادية قاسمي', status:'confirmed' }, { id:'c-3', reference:'PV-16-2409-009', date:'22/09/2026', wilaya:'وهران', slaughterhouse:'مذبح السانيا', disease:'الحمى القلاعية', doctor:'د. مراد بن عمر', status:'confirmed' }, { id:'c-4', reference:'PV-16-2409-005', date:'22/09/2026', wilaya:'سطيف', slaughterhouse:'مذبح العلمة', disease:'السل البقري', doctor:'د. سارة حداد', status:'confirmed' }];
+const diseases = [{ name:'السل البقري', value:38, color:'#168873' }, { name:'داء المشوكات', value:27, color:'#40b49b' }, { name:'الحمى القلاعية', value:19, color:'#e2a23b' }, { name:'أمراض أخرى', value:16, color:'#a8bbc8' }];
+const wilayas = ['الجزائر','البليدة','وهران','سطيف','قسنطينة','تيزي وزو','باتنة','عنابة','بجاية','تلمسان','الشلف','الجلفة'];
 
 export default function MinistryDashboard() {
-  const { t, i18n } = useTranslation();
-  const isRtl = i18n.language === 'ar';
-  const user = getCurrentUser();
-
-  return (
-    <div className="space-y-4">
-      <PageHeader
-        category={t('roles.ministry')}
-        badge="Direction des Services Vétérinaires (Centrale)"
-        badgeVariant="danger"
-        title={t('nav.ministry')}
-        subtitle={
-          isRtl
-            ? "الرصد الوبائي المركزي الوطني، تجميع مؤشرات الأمراض الحيوانية والمحجوزات، والإنذار المبكر للأوبئة."
-            : "Observatoire épidémiologique national centralisé, consolidation des saisies et alertes MDO."
-        }
-      />
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <MetricTile
-          label={isRtl ? "المسؤول المركزي" : "Responsable DSV"}
-          value={user?.fullName || "Dr. Yacine DSV"}
-          subtext={user?.email || "central@sante-animale.dz"}
-          icon={User}
-          variant="red"
-        />
-        <MetricTile
-          label={isRtl ? "نطاق التغطية" : "Périmètre national"}
-          value="58 Wilayas"
-          subtext={isRtl ? "تغطية شاملة للمذابح" : "Réseau national d'abattage"}
-          icon={Globe}
-          variant="dhis"
-        />
-        <MetricTile
-          label={isRtl ? "نظام المراقبة" : "Veille sanitaire"}
-          value="DHIS2 / WHO Protocol"
-          subtext="Indicateurs agrégés"
-          icon={Activity}
-          variant="emerald"
-        />
-      </div>
-
-      <ClinicalCard
-        title={isRtl ? "لوحة القيادة والمؤشرات الوبائية الوطنية" : "Tableau de Bord Épidémiologique National"}
-        subtitle={isRtl ? "تجميع شامل لمعطيات الإنذار الصحي والمحجوزات عبر القطر" : "Agrégation macroscopique des données sanitaires transmises"}
-        icon={Landmark}
-        action={<StatusBadge variant="danger" dot>{isRtl ? "مراقبة مركزية" : "Veille centrale"}</StatusBadge>}
-      >
-        <div className="p-4 bg-slate-50 border border-dashed border-slate-300 rounded-sm text-center py-10 space-y-2">
-          <CheckCircle2 className="w-8 h-8 text-red-600 mx-auto" />
-          <h4 className="text-sm font-bold text-slate-800">
-            {isRtl ? "بوابة الوزارة المركزية مهيأة" : "Tableau de Bord Centralisé Initialisé"}
-          </h4>
-          <p className="text-xs text-slate-500 max-w-md mx-auto">
-            {isRtl
-              ? "تم التحقق من نطاق الوصول الإداري المركزي. جاهز لاستقبال بيانات الخرائط الوبائية والمؤشرات المجمعة."
-              : "Accès national sécurisé validé. Prêt pour l'intégration SIG épidémiologique et reporting consolidé."}
-          </p>
-        </div>
-      </ClinicalCard>
-    </div>
-  );
+  const { t } = useTranslation(); const [period, setPeriod] = useState('week');
+  const columns = [{ key:'reference', label:'المرجع', render:(row)=><strong>{row.reference}</strong> }, { key:'date', label:t('common.date') }, { key:'wilaya', label:t('common.wilaya') }, { key:'slaughterhouse', label:t('common.slaughterhouse') }, { key:'disease', label:t('common.disease') }, { key:'doctor', label:t('common.doctor') }, { key:'status', label:t('common.status'), render:()=> <StatusBadge status="confirmed">{t('status.confirmed')}</StatusBadge> }];
+  return <AppShell><PageHeader eyebrow={t('ministryPage.eyebrow')} title={t('ministryPage.title')} description={t('ministryPage.description')} action={<div className="period-tabs">{['day','week','month','custom'].map((key)=><button key={key} className={period===key?'period-tab period-tab-active':'period-tab'} onClick={()=>setPeriod(key)}>{t(`ministryPage.${key}`)}</button>)}</div>} /><div className="verified-banner"><ShieldCheck size={22}/><div><strong>{t('ministryPage.verified')}</strong><p>{t('ministryPage.verifiedDesc')}</p></div></div><FilterBar onReset={()=>{}}><Field label={t('common.wilaya')}><select><option>{t('common.allWilayas')}</option><option>الجزائر</option><option>البليدة</option><option>وهران</option></select></Field><Field label={t('common.slaughterhouse')}><select><option>{t('common.allSlaughterhouses')}</option><option>مذبح الرويبة</option><option>مذبح بوفاريك</option></select></Field><Field label={t('common.disease')}><select><option>{t('common.allDiseases')}</option>{diseases.map((d)=><option key={d.name}>{d.name}</option>)}</select></Field></FilterBar><div className="kpi-grid"><KpiCard label={t('ministryPage.confirmed')} value="184" detail={t('ministryPage.verified')} icon={CheckCircle2} tone="teal" /><KpiCard label={t('ministryPage.wilayas')} value="38" detail={t('common.of')+' 58'} icon={Map} tone="navy" /><KpiCard label={t('ministryPage.slaughterhouses')} value="126" detail={t('common.updated')} icon={Globe2} tone="navy" /><KpiCard label={t('ministryPage.urgent')} value="12" detail="+3.2%" icon={Activity} tone="red" /></div><div className="grid-two"><SectionCard title={t('ministryPage.trend')} description={t('ministryPage.trendDesc')} icon={TrendingUp}><div className="chart"><svg viewBox="0 0 600 170" preserveAspectRatio="none"><path className="chart-grid" d="M0 30H600 M0 70H600 M0 110H600 M0 150H600"/><path className="chart-area" d="M0 140 L75 122 L150 128 L225 89 L300 102 L375 68 L450 78 L525 42 L600 53 L600 170 L0 170Z"/><path className="chart-line" d="M0 140 L75 122 L150 128 L225 89 L300 102 L375 68 L450 78 L525 42 L600 53"/></svg><div className="chart-labels"><span>17/09</span><span>18/09</span><span>19/09</span><span>20/09</span><span>21/09</span><span>22/09</span><span>23/09</span></div></div></SectionCard><SectionCard title={t('ministryPage.hotspots')} description={t('ministryPage.hotspotsDesc')} icon={Activity}><div className="bar-list">{diseases.map((item)=><div className="bar-row" key={item.name}><div className="bar-meta"><span>{item.name}</span><strong>{item.value}%</strong></div><div className="bar-track"><div className="bar-fill" style={{width:`${item.value*2.2}%`,background:item.color}}></div></div></div>)}</div></SectionCard></div><div className="grid-two margin-top"><SectionCard title={t('ministryPage.geography')} description={t('ministryPage.geographyDesc')} icon={Map}><div className="map-panel"><div className="geo-grid">{wilayas.map((name,index)=><div className="geo-cell" key={name} title={name}>{index+1}</div>)}</div><div className="legend"><span><i style={{background:'#e4f3ef'}}></i>0–5</span><span><i style={{background:'#8ecfbe'}}></i>6–15</span><span><i style={{background:'#f9e8c3'}}></i>16+</span></div></div></SectionCard><SectionCard title={t('ministryPage.topWilayas')} description={t('ministryPage.topSlaughterhouses')} icon={ClipboardList}><div className="bar-list"><div className="bar-row"><div className="bar-meta"><span>الجزائر</span><strong>42</strong></div><div className="bar-track"><div className="bar-fill" style={{width:'86%'}}></div></div></div><div className="bar-row"><div className="bar-meta"><span>البليدة</span><strong>31</strong></div><div className="bar-track"><div className="bar-fill" style={{width:'66%'}}></div></div></div><div className="bar-row"><div className="bar-meta"><span>وهران</span><strong>24</strong></div><div className="bar-track"><div className="bar-fill" style={{width:'50%'}}></div></div></div></div></SectionCard></div><SectionCard title={t('ministryPage.recent')} description={t('ministryPage.onlyVerified')} icon={ClipboardList}><DataTable columns={columns} rows={confirmedCases} empty={null}/></SectionCard></AppShell>;
 }

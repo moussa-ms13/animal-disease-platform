@@ -59,7 +59,7 @@ let _currentUser = null;
  * @param {string} password
  * @returns {Promise<{ user: object | null, error: string | null }>}
  */
-export async function loginUser(email, password) {
+export async function loginUser(email, _password) {
   try {
     // 1. Try querying custom users table joined with roles
     const { data, error } = await supabase
