@@ -40,7 +40,8 @@
     "reset": "Réinitialiser",
     "details": "Détails",
     "close": "Fermer",
-    "add": "Ajouter"
+    "add": "Ajouter",
+    "shortcutNewCase": "Raccourci : C"
   },
   "shell": {
     "workspace": "Espaces de travail",
@@ -54,7 +55,12 @@
     "urgentNoticeText": "Suspicion de fièvre aphteuse à l'abattoir de Bir Mourad Raïs",
     "pendingNotice": "Cas en attente de revue",
     "pendingNoticeText": "5 dossiers reçus au cours des quatre dernières heures",
-    "footer": "Ministère de l'Agriculture et du Développement rural · Direction des services vétérinaires · Version 2.0"
+    "footer": "Ministère de l'Agriculture et du Développement rural · Direction des services vétérinaires · Version 2.0",
+    "commandTitle": "Navigation rapide",
+    "commandPlaceholder": "Rechercher des pages et des cas...",
+    "commandHint": "Ouvrir la recherche rapide (Ctrl/⌘ + K)",
+    "openNavigation": "Ouvrir la navigation",
+    "searchCases": "Rechercher des cas"
   },
   "login": {
     "eyebrow": "Portail sécurisé de contrôle sanitaire",
@@ -92,7 +98,9 @@
     "cases": "cas",
     "reports": "rapports",
     "of": "sur",
-    "updated": "Mis à jour il y a 12 min"
+    "updated": "Mis à jour il y a 12 min",
+    "reference": "Référence",
+    "yesterday": "Hier"
   },
   "vet": {
     "eyebrow": "Parcours terrain / vétérinaire",
