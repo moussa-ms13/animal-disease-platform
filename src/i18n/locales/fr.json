@@ -100,7 +100,10 @@
     "of": "sur",
     "updated": "Mis à jour il y a 12 min",
     "reference": "Référence",
-    "yesterday": "Hier"
+    "yesterday": "Hier",
+    "reportingPeriod": "Période de référence",
+    "dateRange": "Du {{start}} au {{end}}",
+    "trendAccessible": "Tendance sur 7 jours"
   },
   "vet": {
     "eyebrow": "Parcours terrain / vétérinaire",
@@ -141,7 +144,9 @@
     "saveAndExit": "Enregistrer et quitter",
     "operationalEyebrow": "Contexte opérationnel du jour",
     "operationalTitle": "Prêt à saisir un cas depuis vos abattoirs assignés",
-    "nextStep": "Ouvrez un nouveau rapport ou poursuivez la revue des rapports récents."
+    "nextStep": "Ouvrez un nouveau rapport ou poursuivez la revue des rapports récents.",
+    "inspectionDateTime": "Date et heure du rapport",
+    "submitNextStep": "Transmis à la wilaya · prochaine étape : revue et confirmation par l’inspection"
   },
   "wilayaPage": {
     "eyebrow": "Parcours régional / Alger",
@@ -199,7 +204,9 @@
     "topSlaughterhouses": "Abattoirs les plus actifs",
     "recent": "Derniers cas confirmés",
     "onlyVerified": "Ce tableau affiche uniquement les cas confirmés par la wilaya",
-    "currentContext": "Contexte actuel : cas confirmés uniquement"
+    "currentContext": "Contexte actuel : cas confirmés uniquement",
+    "confirmedBurden": "Cas confirmés actuels",
+    "periodRange": "Période active : {{range}}"
   },
   "adminPage": {
     "eyebrow": "Parcours administration / système",
@@ -212,6 +219,9 @@
     "userManagement": "Utilisateurs et rôles",
     "reference": "Données de référence",
     "active": "Actif",
-    "manage": "Gérer"
+    "manage": "Gérer",
+    "diseaseReferenceMeta": "24 éléments · mise à jour aujourd’hui",
+    "slaughterhouseReferenceMeta": "126 établissements · 38 wilayas",
+    "assignmentReferenceMeta": "Distribution multi-abattoirs"
   }
 }

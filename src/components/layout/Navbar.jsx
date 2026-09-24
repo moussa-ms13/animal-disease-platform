@@ -38,12 +38,12 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#1a2b3c] text-white border-b border-slate-700 shadow-sm">
+    <header className="sticky top-0 z-50 bg-[#1a2b3c] text-white border-b border-slate-700">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
         <div className="flex items-center justify-between h-12">
           {/* Clinical Animal Inspection Emblem & Concise Shorthand Title */}
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-7 h-7 rounded-sm bg-[#0c4a6e] border border-blue-400/40 flex items-center justify-center text-emerald-400 shrink-0 shadow-sm">
+            <div className="w-7 h-7 rounded-sm bg-[#0c4a6e] border border-blue-400/40 flex items-center justify-center text-emerald-400 shrink-0">
               <Stethoscope className="w-4 h-4 text-emerald-300" />
             </div>
             <div className="min-w-0">

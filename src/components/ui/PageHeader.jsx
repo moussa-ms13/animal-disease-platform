@@ -13,7 +13,7 @@ export default function PageHeader({
 }) {
   return (
     <div
-      className={`bg-white border border-slate-200 rounded-sm p-4 shadow-clinical ${className}`}
+      className={`bg-white border border-slate-200 rounded-sm p-4 ${className}`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">

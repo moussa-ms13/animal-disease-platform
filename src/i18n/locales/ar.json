@@ -100,7 +100,10 @@
     "of": "من",
     "updated": "آخر تحديث منذ 12 دقيقة",
     "reference": "المرجع",
-    "yesterday": "أمس"
+    "yesterday": "أمس",
+    "reportingPeriod": "الفترة المرجعية",
+    "dateRange": "من {{start}} إلى {{end}}",
+    "trendAccessible": "اتجاه الأيام السبعة"
   },
   "vet": {
     "eyebrow": "المسار الميداني / الطبيب البيطري",
@@ -141,7 +144,9 @@
     "saveAndExit": "حفظ وخروج",
     "operationalEyebrow": "سياق التشغيل اليومي",
     "operationalTitle": "جاهز لتسجيل حالة من المسالخ الموكلة",
-    "nextStep": "يمكنك فتح تقرير جديد أو متابعة قائمة التقارير الأخيرة."
+    "nextStep": "يمكنك فتح تقرير جديد أو متابعة قائمة التقارير الأخيرة.",
+    "inspectionDateTime": "تاريخ ووقت التقرير",
+    "submitNextStep": "أُرسل إلى الولاية · الخطوة التالية: المراجعة والاعتماد من المفتشية"
   },
   "wilayaPage": {
     "eyebrow": "المسار الإقليمي / الجزائر",
@@ -199,7 +204,9 @@
     "topSlaughterhouses": "المسالخ الأعلى نشاطاً",
     "recent": "أحدث الحالات المؤكدة",
     "onlyVerified": "يعرض هذا الجدول الحالات المعتمدة من الولاية فقط",
-    "currentContext": "السياق التشغيلي الحالي: حالات معتمدة فقط"
+    "currentContext": "السياق التشغيلي الحالي: حالات معتمدة فقط",
+    "confirmedBurden": "الحالات المؤكدة الحالية",
+    "periodRange": "الفترة النشطة: {{range}}"
   },
   "adminPage": {
     "eyebrow": "المسار الإداري / إدارة النظام",
@@ -212,6 +219,9 @@
     "userManagement": "المستخدمون والأدوار",
     "reference": "البيانات المرجعية",
     "active": "نشط",
-    "manage": "إدارة"
+    "manage": "إدارة",
+    "diseaseReferenceMeta": "24 عنصراً · آخر تحديث اليوم",
+    "slaughterhouseReferenceMeta": "126 منشأة · 38 ولاية",
+    "assignmentReferenceMeta": "توزيع متعدد المسالخ"
   }
 }

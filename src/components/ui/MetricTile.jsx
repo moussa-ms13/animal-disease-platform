@@ -29,7 +29,7 @@ export default function MetricTile({
 
   return (
     <div
-      className={`bg-white border border-slate-200 rounded-sm p-4 ${borderStyle} ${rtlBorderStyle} shadow-clinical ${className}`}
+      className={`bg-white border border-slate-200 rounded-sm p-4 ${borderStyle} ${rtlBorderStyle} ${className}`}
     >
       <div className="flex items-start justify-between gap-2">
         <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
