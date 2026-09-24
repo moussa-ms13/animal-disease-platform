@@ -138,7 +138,10 @@
     "validation": "Complétez l'abattoir, la maladie et le poids avant l'envoi.",
     "draftSaved": "Brouillon enregistré localement.",
     "submittedSuccess": "Rapport transmis à l'inspection de wilaya.",
-    "saveAndExit": "Enregistrer et quitter"
+    "saveAndExit": "Enregistrer et quitter",
+    "operationalEyebrow": "Contexte opérationnel du jour",
+    "operationalTitle": "Prêt à saisir un cas depuis vos abattoirs assignés",
+    "nextStep": "Ouvrez un nouveau rapport ou poursuivez la revue des rapports récents."
   },
   "wilayaPage": {
     "eyebrow": "Parcours régional / Alger",
@@ -161,7 +164,15 @@
     "confirmHelp": "Après confirmation, le cas sera visible au centre national dans les données vérifiées uniquement.",
     "confirmedSuccess": "Cas confirmé et maintenant visible au centre national.",
     "returnedSuccess": "Cas retourné au vétérinaire pour correction.",
-    "rejectedSuccess": "Cas rejeté et décision enregistrée."
+    "rejectedSuccess": "Cas rejeté et décision enregistrée.",
+    "priorityEyebrow": "Priorité actuelle",
+    "alertCount": "alertes urgentes",
+    "alertAge": "il y a 18 minutes",
+    "acknowledge": "Accuser réception",
+    "acknowledged": "Accusée réception",
+    "acknowledgedSuccess": "La prise en compte de l’alerte urgente est enregistrée.",
+    "noUrgent": "Aucune alerte urgente ouverte pour le moment.",
+    "monitorNext": "Poursuivez avec la liste des cas à revoir."
   },
   "ministryPage": {
     "eyebrow": "Parcours national / données vérifiées",
@@ -187,7 +198,8 @@
     "topWilayas": "Wilayas principales",
     "topSlaughterhouses": "Abattoirs les plus actifs",
     "recent": "Derniers cas confirmés",
-    "onlyVerified": "Ce tableau affiche uniquement les cas confirmés par la wilaya"
+    "onlyVerified": "Ce tableau affiche uniquement les cas confirmés par la wilaya",
+    "currentContext": "Contexte actuel : cas confirmés uniquement"
   },
   "adminPage": {
     "eyebrow": "Parcours administration / système",

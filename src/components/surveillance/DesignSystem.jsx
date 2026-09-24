@@ -36,7 +36,7 @@ export function SectionCard({ title, description, icon: Icon, action, children, 
 
 export function FilterBar({ children, onReset }) { const { t } = useTranslation(); return <div className="filter-bar"><div className="filter-fields">{children}</div>{onReset && <button className="text-button" onClick={onReset}>{t('actions.reset')}</button>}</div>; }
 export function Field({ label, icon: Icon, children, className = '' }) { return <label className={cx('field', className)}><span>{label}</span><div className="field-control">{Icon && <Icon size={16} />}{children}</div></label>; }
-export function EmptyState({ icon: Icon = ClipboardList, title, description }) { return <div className="empty-state"><Icon size={26} /><strong>{title}</strong><p>{description}</p></div>; }
+export function EmptyState({ icon: Icon = ClipboardList, title, description, action }) { return <div className="empty-state"><Icon size={26} /><strong>{title}</strong><p>{description}</p>{action && <div className="next-action">{action}</div>}</div>; }
 
 const navItems = [
   { to: '/veterinarian', key: 'nav.veterinarian', icon: Stethoscope, roles: ['VETERINARIAN'] },
